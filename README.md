@@ -1,3 +1,5 @@
+![Live Bundesliga Titelbild](cover.png)
+
 # Live-Bundesliga-Tabelle
 
 Ein kleines HTML‑Projekt, das beim Aufruf automatisch die aktuelle 1. Bundesliga‑Tabelle (Saison 2025/26) per **OpenLigaDB**‑API lädt und anzeigt.
