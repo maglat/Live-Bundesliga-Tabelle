@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Bundesliga‑Tabelle (Live)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {font-family: 'Quicksand', Arial, sans-serif; background:#f5f7fa; margin:2rem; color:#333;}
+    h2 {color:#2c3e50; margin-bottom:0.5rem;}
+    .loader {font-size:0.9rem; color:#777;}
+    table {border-collapse:separate; border-spacing:0; width:100%; max-width:860px; margin-top:1rem; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+    th, td {padding:0.75rem 0.5rem; text-align:center; font-size:0.94rem;}
+    th {background:#2c3e50; color:#fff; font-weight:600;}
+    tbody tr {transition:background 0.2s;}
+    tbody tr:nth-child(even){background:#f0f4f8;}
+    tbody tr:hover{background:#dce9f5;}
+    th:nth-child(1), td:nth-child(1){width:3%;}
+    th:nth-child(2), td:nth-child(2){width:35%; text-align:left; padding-left:0.8rem;}
+    th:nth-child(3), td:nth-child(3){width:8%;}
+    th:nth-child(4), td:nth-child(4){width:8%;}
+    th:nth-child(5), td:nth-child(5){width:8%;}
+    th:nth-child(6), td:nth-child(6){width:8%;}
+    th:nth-child(7), td:nth-child(7){width:8%;}
+    th:nth-child(8), td:nth-child(8){width:10%;}
+    .fade-in{animation:fadeIn 0.6s ease-out;}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  </style>
+</head>
+<body>
+<h2>Bundesliga‑Tabelle (Live, Saison 2025/26)</h2>
+<p class="loader">Daten werden geladen …</p>
+<table id="tbl">
+  <thead>
+    <tr>
+      <th>#</th><th>Mannschaft</th><th>Sp.</th><th>S</th><th>U</th>
+      <th>V</th><th>+/-</th><th>Pkt.</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<script>
+  const season = 2025;
+  const apiUrl = `https://api.openligadb.de/getbltable/bl1/${season}`;
+  fetch(apiUrl)
+    .then(r=>r.json())
+    .then(data=>{
+      document.querySelector('.loader').remove();
+      const tbody=document.querySelector('#tbl tbody');
+      data.forEach((team,idx)=>{
+        const tr=document.createElement('tr');
+        tr.classList.add('fade-in');
+        tr.innerHTML=`
+          <td>${idx+1}</td>
+          <td>${team.teamName}</td>
+          <td>${team.matches}</td>
+          <td>${team.won}</td>
+          <td>${team.draw}</td>
+          <td>${team.lost}</td>
+          <td>${team.goalDiff}</td>
+          <td>${team.points}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err=>{console.error(err);document.querySelector('.loader').textContent='❌ Fehler beim Laden der Daten.';});
+</script>
+</body>
+</html>
