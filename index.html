@@ -2,33 +2,88 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Bundesliga‑Tabelle (Live)</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Bundesliga‑Tabelle (Saison …)</title>
+
+  <!-- ---------- Styles ---------- -->
   <style>
-    body {font-family: 'Quicksand', Arial, sans-serif; background:#f5f7fa; margin:2rem; color:#333;}
-    h2 {color:#2c3e50; margin-bottom:0.5rem;}
-    .loader {font-size:0.9rem; color:#777;}
-    table {border-collapse:separate; border-spacing:0; width:100%; max-width:860px; margin-top:1rem; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-    th, td {padding:0.75rem 0.5rem; text-align:center; font-size:0.94rem;}
-    th {background:#2c3e50; color:#fff; font-weight:600;}
-    tbody tr {transition:background 0.2s;}
-    tbody tr:nth-child(even){background:#f0f4f8;}
-    tbody tr:hover{background:#dce9f5;}
-    th:nth-child(1), td:nth-child(1){width:3%;}
-    th:nth-child(2), td:nth-child(2){width:35%; text-align:left; padding-left:0.8rem;}
-    th:nth-child(3), td:nth-child(3){width:8%;}
-    th:nth-child(4), td:nth-child(4){width:8%;}
-    th:nth-child(5), td:nth-child(5){width:8%;}
-    th:nth-child(6), td:nth-child(6){width:8%;}
-    th:nth-child(7), td:nth-child(7){width:8%;}
-    th:nth-child(8), td:nth-child(8){width:10%;}
-    .fade-in{animation:fadeIn 0.6s ease-out;}
-    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    body{
+      font-family:'Quicksand',Arial,sans-serif;
+      background:#f5f7fa;
+      margin:2rem;
+      color:#333;
+    }
+    h2{color:#2c3e50;margin-bottom:.3rem;}
+    .loader{font-size:.9rem;color:#777;margin-top:.5rem;}
+    .season-select{
+      margin-bottom:1rem;
+      display:flex;align-items:center;gap:.5rem;
+    }
+    select{
+      padding:.4rem .6rem;
+      font-size:.95rem;
+      border:1px solid #bbb;
+      border-radius:4px;
+      background:#fff;
+    }
+
+    /* Tabelle */
+    table{
+      border-collapse:separate;
+      border-spacing:0;
+      width:100%;max-width:860px;
+      background:#fff;
+      border-radius:8px;
+      overflow:hidden;
+      box-shadow:0 2px 6px rgba(0,0,0,.1);
+    }
+    th,td{
+      padding:.75rem .5rem;
+      text-align:center;
+      font-size:.94rem;
+    }
+    th{
+      background:#2c3e50;
+      color:#fff;
+      font-weight:600;
+    }
+    tbody tr{
+      transition:background .2s;
+      border-bottom:1px solid #eaeaea;   /* dezente Zeilen‑Trennung */
+    }
+    tbody tr:last-child{border-bottom:none;}
+
+    /* Highlight‑Klassen */
+    .champions  {background:#d4edda;}   /* 1‑4   (Champions‑League) */
+    .europa    {background:#fff3cd;}   /* 5‑6   (Europa‑League)   */
+    .relegation{background:#ffe5b4;}   /* 16    (Relegations‑Play‑off) */
+    .abstieg   {background:#f8d7da;}   /* 17‑18 (Direkter Abstieg)   */
+
+    /* Spaltenbreiten */
+    th:nth-child(1),td:nth-child(1){width:3%;}
+    th:nth-child(2),td:nth-child(2){width:35%;text-align:left;padding-left:.8rem;}
+    th:nth-child(3),td:nth-child(3){width:8%;}
+    th:nth-child(4),td:nth-child(4){width:8%;}
+    th:nth-child(5),td:nth-child(5){width:8%;}
+    th:nth-child(6),td:nth-child(6){width:8%;}
+    th:nth-child(7),td:nth-child(7){width:8%;}
+    th:nth-child(8),td:nth-child(8){width:10%;}
+
+    .fade-in{animation:fadeIn .6s ease-out;}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   </style>
 </head>
+
 <body>
-<h2>Bundesliga‑Tabelle (Live, Saison 2025/26)</h2>
-<p class="loader">Daten werden geladen …</p>
+
+<h2>Bundesliga‑Tabelle (Live)</h2>
+
+<div class="season-select">
+  <label for="season">Saison:</label>
+  <select id="season"></select>
+</div>
+
+<p class="loader">Lade Daten …</p>
+
 <table id="tbl">
   <thead>
     <tr>
@@ -38,31 +93,76 @@
   </thead>
   <tbody></tbody>
 </table>
+
 <script>
-  const season = 2025;
-  const apiUrl = `https://api.openligadb.de/getbltable/bl1/${season}`;
-  fetch(apiUrl)
-    .then(r=>r.json())
-    .then(data=>{
-      document.querySelector('.loader').remove();
-      const tbody=document.querySelector('#tbl tbody');
-      data.forEach((team,idx)=>{
-        const tr=document.createElement('tr');
-        tr.classList.add('fade-in');
-        tr.innerHTML=`
-          <td>${idx+1}</td>
-          <td>${team.teamName}</td>
-          <td>${team.matches}</td>
-          <td>${team.won}</td>
-          <td>${team.draw}</td>
-          <td>${team.lost}</td>
-          <td>${team.goalDiff}</td>
-          <td>${team.points}</td>
-        `;
-        tbody.appendChild(tr);
+  const seasonSelect = document.getElementById('season');
+
+  // ----- 1️⃣ Aktuelles Datum & Laufende Saison -----
+  const now = new Date();
+  const nowYear = now.getFullYear();
+  const nowMonth = now.getMonth() + 1;          // Jan = 1
+
+  const currentSeasonStart = nowMonth >= 7 ? nowYear : nowYear - 1;
+
+  // ----- 2️⃣ Dropdown‑Optionen (letzte 5 + aktuelle + nächste) -----
+  const start = nowYear - 5;
+  const end   = nowYear + 1;
+  for (let yr = start; yr <= end; yr++) {
+    const opt = document.createElement('option');
+    opt.value = yr;
+    opt.textContent = `${yr}/${yr+1}`;
+    seasonSelect.appendChild(opt);
+  }
+  seasonSelect.value = currentSeasonStart;      // laufende Saison vorauswählen
+
+  // ----- 3️⃣ Tabelle per API laden -----
+  function loadTable(seasonStartYear){
+    const apiUrl = `https://api.openligadb.de/getbltable/bl1/${seasonStartYear}`;
+    document.querySelector('.loader').textContent = 'Lade Daten …';
+    document.title = `Bundesliga‑Tabelle ${seasonStartYear}/${seasonStartYear+1}`;
+
+    fetch(apiUrl)
+      .then(r => r.json())
+      .then(data => {
+        document.querySelector('.loader').textContent = '';
+        const tbody = document.querySelector('#tbl tbody');
+        tbody.innerHTML = '';
+
+        data.forEach((team, i) => {
+          const tr = document.createElement('tr');
+          tr.classList.add('fade-in');
+
+          const pos = i + 1;                 // 1‑basiert
+          if (pos <= 4)          tr.classList.add('champions');
+          else if (pos <= 6)     tr.classList.add('europa');
+          else if (pos === 16)   tr.classList.add('relegation');
+          else if (pos >= 17)    tr.classList.add('abstieg');
+
+          tr.innerHTML = `
+            <td>${pos}</td>
+            <td>${team.teamName}</td>
+            <td>${team.matches}</td>
+            <td>${team.won}</td>
+            <td>${team.draw}</td>
+            <td>${team.lost}</td>
+            <td>${team.goalDiff}</td>
+            <td>${team.points}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        document.querySelector('.loader').textContent = '❌ Daten konnten nicht geladen werden.';
       });
-    })
-    .catch(err=>{console.error(err);document.querySelector('.loader').textContent='❌ Fehler beim Laden der Daten.';});
+  }
+
+  // ----- 4️⃣ Dropdown‑Change‑Event -----
+  seasonSelect.addEventListener('change', e => loadTable(e.target.value));
+
+  // ----- 5️⃣ Beim ersten Öffnen aktuelle Saison anzeigen -----
+  loadTable(seasonSelect.value);
 </script>
+
 </body>
 </html>
