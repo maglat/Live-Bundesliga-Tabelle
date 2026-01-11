@@ -1,26 +1,32 @@
-# Live-Bundesliga-Tabelle
+# Live-Bundesliga‑Tabelle
 
-Ein kleines HTML‑Projekt, das beim Aufruf automatisch die aktuelle 1. Bundesliga‑Tabelle per OpenLigaDB‑API lädt und anzeigt.
+Ein einfaches HTML‑Projekt, das dynamisch die aktuelle Bundesliga‑Tabelle per **OpenLigaDB**‑API lädt.
 
 ## Features
 
-### v1.1
-- **Saison‑Dropdown** – wähle einfach die gewünschte Saison, die aktuelle Saison ist bereits vorausgewählt.  
-- **Farbliche Highlights** – Champions‑League‑Plätze (1‑4) in grün, Europa‑League‑Plätze (5‑6) in gelb, Relegations‑Play‑off (Platz 16) in orange und Abstiegsplätze (17‑18) in rot.  
-- **Dezente Zeilenlinien** statt Zebra‑Striping für eine klare Darstellung.  
-- **Automatischer Seitentitel** und API‑Aufruf passen sich der ausgewählten Saison an.
+### v1.1 (vorherige Version)
+- **Saison‑Dropdown** – wähle die gewünschte Saison, aktuelle Saison ist vorausgewählt.
+- **Farbliche Highlights** für Champions‑League, Europa‑League, Relegations‑Play‑off und Abstiegsplätze.
+- **Dezente Zeilenlinien** anstelle von Zebra‑Striping.
+- **Automatischer Seitentitel** passt sich der gewählten Saison an.
 
-### v1.2 (neu)
-- **Aktueller Spieltag** wird angezeigt (z. B. “Spieltag 5 / 34”).  
-- **Vereins‑Logos** neben dem Mannschaftsnamen (falls vorhanden).  
-- **Legende** am unteren Rand erklärt die Farben.  
-- **Animationen** beim Laden der Zeilen (Fade‑In + Slide‑Down).
+### v1.2 (Weiterentwicklung)
+- **Aktueller Spieltag** wird angezeigt (z. B. "Spieltag 5 / 34").
+- **Vereins‑Logos** werden neben dem Mannschaftsnamen dargestellt.
+- **Legende** erklärt die farblichen Markierungen.
+- **Animationen** beim Laden der Zeilen (Fade‑In + Slide‑Down).
+
+### v1.3 (neueste Version)
+- **Liga‑Dropdown** – wähle zwischen 1. Bundesliga (`bl1`), 2. Bundesliga (`bl2`) und 3. Liga (`bl3`).
+- **Saison‑Dropdown** bleibt erhalten und ist jetzt neben dem Liga‑Dropdown angeordnet.
+- **Titel & Überschrift** ändern sich automatisch zu "1. Bundesliga‑Tabelle", "2. Bundesliga‑Tabelle" bzw. "3. Liga‑Tabelle".
+- **Spieltag‑Anzeige** wird für die ausgewählte Liga korrekt geladen.
+- **Alle Features von v1.2** (Logos, Highlights, Legende, Animationen) funktionieren ebenfalls für jede Liga.
 
 ## Nutzung
-1. Repository klonen oder `index.html` herunterladen.  
-2. Im Browser öffnen – die Tabelle wird automatisch geladen.  
-3. Mit dem Dropdown kann die Saison gewechselt werden; die Tabelle wird sofort neu geladen.
+1. Repository klonen oder `index.html` herunterladen.
+2. Im Browser öffnen – die Tabelle wird beim Laden automatisch angezeigt.
+3. Im Dropdown oben kannst du **Liga** und **Saison** auswählen; die Tabelle aktualisiert sich sofort.
 
-## Hinweis zur Saison
-Ab Juli beginnt die neue Saison, das Skript wählt automatisch das aktuelle Saison‑Jahr aus.  
-Falls du eine andere Saison sehen willst, wähle sie einfach im Dropdown.
+## Hinweis zur Saison‑Logik
+Die neue Saison startet im Juli. Das Skript ermittelt automatisch das aktuelle Saison‑Startjahr. Für frühere Saisons wähle sie einfach im Dropdown.
