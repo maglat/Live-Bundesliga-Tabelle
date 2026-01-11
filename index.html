@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>1. Bundesliga‑Tabelle</title>
 
-  <!-- ---------- Styles ---------- -->
   <style>
     body{
       font-family:'Quicksand',Arial,sans-serif;
@@ -14,20 +13,62 @@
     }
     h2{color:#2c3e50;margin-bottom:.3rem;}
     .loader{font-size:.9rem;color:#777;margin-top:.5rem;}
-    .season-select{margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
-    select{padding:.4rem .6rem;font-size:.95rem;border:1px solid #bbb;border-radius:4px;background:#fff;}
-    .info{margin:0.6rem 0;font-size:.95rem;color:#555;}.info span{font-weight:600;}
-    table{border-collapse:separate;border-spacing:0;width:100%;max-width:860px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.1);}
-    th,td{padding:.75rem .5rem;text-align:center;font-size:.94rem;}
-    th{background:#2c3e50;color:#fff;font-weight:600;}
-    tbody tr{transition:background .2s;border-bottom:1px solid #eaeaea;}
+
+    /* Flex‑Container für beide Dropdowns */
+    .controls{
+      display:flex;align-items:center;gap:1rem;margin-bottom:1rem;
+    }
+    label{font-size:.95rem;}
+    select{
+      padding:.4rem .6rem;
+      font-size:.95rem;
+      border:1px solid #bbb;
+      border-radius:4px;
+      background:#fff;
+    }
+
+    .info{margin:.6rem 0;font-size:.95rem;color:#555;}
+    .info span{font-weight:600;}
+
+    /* Tabelle */
+    table{
+      border-collapse:separate;
+      border-spacing:0;
+      width:100%;max-width:860px;
+      background:#fff;
+      border-radius:8px;
+      overflow:hidden;
+      box-shadow:0 2px 6px rgba(0,0,0,.1);
+    }
+    th,td{
+      padding:.75rem .5rem;
+      text-align:center;
+      font-size:.94rem;
+    }
+    th{
+      background:#2c3e50;
+      color:#fff;
+      font-weight:600;
+    }
+    tbody tr{
+      transition:background .2s;
+      border-bottom:1px solid #eaeaea;
+    }
     tbody tr:last-child{border-bottom:none;}
-    .team-cell{display:flex;align-items:center;gap:.4rem;}
-    .team-cell img{width:24px;height:24px;object-fit:contain;}
+
+    .team-cell{
+      display:flex;align-items:center;gap:.4rem;
+    }
+    .team-cell img{
+      width:24px;height:24px;object-fit:contain;
+    }
+
+    /* Highlight‑Klassen */
     .champions{background:#d4edda;}
     .europa{background:#fff3cd;}
     .relegation{background:#ffe5b4;}
     .abstieg{background:#f8d7da;}
+
     th:nth-child(1),td:nth-child(1){width:3%;}
     th:nth-child(2),td:nth-child(2){width:35%;text-align:left;padding-left:.8rem;}
     th:nth-child(3),td:nth-child(3){width:8%;}
@@ -36,6 +77,7 @@
     th:nth-child(6),td:nth-child(6){width:8%;}
     th:nth-child(7),td:nth-child(7){width:8%;}
     th:nth-child(8),td:nth-child(8){width:10%;}
+
     .fade-in{animation:fadeIn .6s ease-out;}
     .slide-down{animation:slideDown .5s ease-out;}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -45,14 +87,23 @@
 
 <body>
 
-<h2>1. Bundesliga‑Tabelle</h2>
+<h2 id="pageTitle">1. Bundesliga‑Tabelle</h2>
 
-<div class="season-select">
+<div class="controls">
+  <label for="league">Liga:</label>
+  <select id="league">
+    <option value="bl1">1. Bundesliga</option>
+    <option value="bl2">2. Bundesliga</option>
+    <option value="bl3">3. Liga</option>
+  </select>
+
   <label for="season">Saison:</label>
   <select id="season"></select>
 </div>
 
-<p class="info">Aktueller Spieltag: <span id="matchday">‑</span> / <span id="totalMatchdays">34</span></p>
+<p class="info">
+  Aktueller Spieltag: <span id="matchday">‑</span> / <span id="totalMatchdays">34</span>
+</p>
 
 <p class="loader">Lade Daten …</p>
 
@@ -77,14 +128,18 @@
 </div>
 
 <script>
-  const seasonSelect = document.getElementById('season');
-  const matchdaySpan = document.getElementById('matchday');
+  const leagueSelect  = document.getElementById('league');
+  const seasonSelect  = document.getElementById('season');
+  const matchdaySpan  = document.getElementById('matchday');
+  const pageTitle     = document.getElementById('pageTitle');
 
-  const now = new Date();
-  const nowYear = now.getFullYear();
-  const nowMonth = now.getMonth() + 1;
-  const currentSeasonStart = nowMonth >= 7 ? nowYear : nowYear - 1;
+  // ---- 1️⃣ Aktuelles Datum & laufende Saison ----
+  const now      = new Date();
+  const nowYear  = now.getFullYear();
+  const nowMonth = now.getMonth() + 1; // Jan = 1
+  const currentSeasonStart = nowMonth >= 7 ? nowYear : nowYear - 1; // ab Juli neue Saison
 
+  // ---- 2️⃣ Dropdown‑Optionen (Saison) ----
   const start = nowYear - 5;
   const end   = nowYear + 1;
   for (let yr = start; yr <= end; yr++) {
@@ -93,10 +148,11 @@
     opt.textContent = `${yr}/${yr+1}`;
     seasonSelect.appendChild(opt);
   }
-  seasonSelect.value = currentSeasonStart;
+  seasonSelect.value = currentSeasonStart; // aktuelle Saison vorselektieren
 
-  function loadMatchday(seasonStart){
-    const url = `https://api.openligadb.de/getcurrentgroup/bl1/${seasonStart}`;
+  // ---- 3️⃣ Hilfs‑Funktion: Spieltag holen ----------
+  function loadMatchday(season, league){
+    const url = `https://api.openligadb.de/getcurrentgroup/${league}/${season}`;
     fetch(url)
       .then(r=>r.json())
       .then(data=>{
@@ -107,26 +163,36 @@
       .catch(()=>{matchdaySpan.textContent='‑';});
   }
 
-  function loadTable(seasonStartYear){
-    const apiUrl = `https://api.openligadb.de/getbltable/bl1/${seasonStartYear}`;
+  // ---- 4️⃣ Tabelle laden ----------
+  function loadTable(season, league){
+    const apiUrl = `https://api.openligadb.de/getbltable/${league}/${season}`;
     document.querySelector('.loader').textContent = 'Lade Daten …';
-    document.title = `1. Bundesliga‑Tabelle ${seasonStartYear}/${seasonStartYear+1}`;
+    const leagueName = league === 'bl1' ? '1. Bundesliga'
+                    : league === 'bl2' ? '2. Bundesliga'
+                    : '3. Liga';
+    document.title = `${leagueName} – ${season}/${season+1}`;
+    pageTitle.textContent = `${leagueName}‑Tabelle`;
 
     fetch(apiUrl)
-      .then(r => r.json())
-      .then(data => {
+      .then(r=>r.json())
+      .then(data=>{
         document.querySelector('.loader').textContent = '';
         const tbody = document.querySelector('#tbl tbody');
         tbody.innerHTML = '';
-        data.forEach((team, i) => {
+
+        data.forEach((team,i)=>{
           const tr = document.createElement('tr');
           tr.classList.add('fade-in','slide-down');
-          const pos = i + 1;
-          if (pos <= 4)          tr.classList.add('champions');
-          else if (pos <= 6)     tr.classList.add('europa');
-          else if (pos === 16)   tr.classList.add('relegation');
-          else if (pos >= 17)    tr.classList.add('abstieg');
-          const logo = team.teamIconUrl ? `<img src="${team.teamIconUrl}" alt="${team.teamName} Logo">` : '';
+
+          const pos = i+1;
+          if (pos<=4)          tr.classList.add('champions');
+          else if (pos<=6)     tr.classList.add('europa');
+          else if (pos===16)   tr.classList.add('relegation');
+          else if (pos>=17)    tr.classList.add('abstieg');
+
+          const logo = team.teamIconUrl
+                     ? `<img src="${team.teamIconUrl}" alt="${team.teamName} Logo">`
+                     : '';
           tr.innerHTML = `
             <td>${pos}</td>
             <td class="team-cell">${logo}<span>${team.teamName}</span></td>
@@ -140,21 +206,25 @@
           tbody.appendChild(tr);
         });
       })
-      .catch(err => {
+      .catch(err=>{
         console.error(err);
         document.querySelector('.loader').textContent = '❌ Daten konnten nicht geladen werden.';
       });
   }
 
-  seasonSelect.addEventListener('change', e => {
-    const s = e.target.value;
-    loadTable(s);
-    loadMatchday(s);
-  });
+  // ---- 5️⃣ Event‑Handler ----------
+  function refresh(){
+    const season = seasonSelect.value;
+    const league  = leagueSelect.value;
+    loadTable(season, league);
+    loadMatchday(season, league);
+  }
 
-  const startSeason = seasonSelect.value;
-  loadTable(startSeason);
-  loadMatchday(startSeason);
+  leagueSelect.addEventListener('change', refresh);
+  seasonSelect.addEventListener('change', refresh);
+
+  // ---- 6️⃣ Initial‑Ladung ----------
+  refresh();
 </script>
 
 </body>
