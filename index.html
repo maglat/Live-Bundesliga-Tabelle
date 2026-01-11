@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Bundesliga‑Tabelle (Saison …)</title>
+  <title>1. Bundesliga‑Tabelle</title>
 
   <!-- ---------- Styles ---------- -->
   <style>
@@ -14,51 +14,20 @@
     }
     h2{color:#2c3e50;margin-bottom:.3rem;}
     .loader{font-size:.9rem;color:#777;margin-top:.5rem;}
-    .season-select{
-      margin-bottom:1rem;
-      display:flex;align-items:center;gap:.5rem;
-    }
-    select{
-      padding:.4rem .6rem;
-      font-size:.95rem;
-      border:1px solid #bbb;
-      border-radius:4px;
-      background:#fff;
-    }
-
-    /* Tabelle */
-    table{
-      border-collapse:separate;
-      border-spacing:0;
-      width:100%;max-width:860px;
-      background:#fff;
-      border-radius:8px;
-      overflow:hidden;
-      box-shadow:0 2px 6px rgba(0,0,0,.1);
-    }
-    th,td{
-      padding:.75rem .5rem;
-      text-align:center;
-      font-size:.94rem;
-    }
-    th{
-      background:#2c3e50;
-      color:#fff;
-      font-weight:600;
-    }
-    tbody tr{
-      transition:background .2s;
-      border-bottom:1px solid #eaeaea;   /* dezente Zeilen‑Trennung */
-    }
+    .season-select{margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+    select{padding:.4rem .6rem;font-size:.95rem;border:1px solid #bbb;border-radius:4px;background:#fff;}
+    .info{margin:0.6rem 0;font-size:.95rem;color:#555;}.info span{font-weight:600;}
+    table{border-collapse:separate;border-spacing:0;width:100%;max-width:860px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.1);}
+    th,td{padding:.75rem .5rem;text-align:center;font-size:.94rem;}
+    th{background:#2c3e50;color:#fff;font-weight:600;}
+    tbody tr{transition:background .2s;border-bottom:1px solid #eaeaea;}
     tbody tr:last-child{border-bottom:none;}
-
-    /* Highlight‑Klassen */
-    .champions  {background:#d4edda;}   /* 1‑4   (Champions‑League) */
-    .europa    {background:#fff3cd;}   /* 5‑6   (Europa‑League)   */
-    .relegation{background:#ffe5b4;}   /* 16    (Relegations‑Play‑off) */
-    .abstieg   {background:#f8d7da;}   /* 17‑18 (Direkter Abstieg)   */
-
-    /* Spaltenbreiten */
+    .team-cell{display:flex;align-items:center;gap:.4rem;}
+    .team-cell img{width:24px;height:24px;object-fit:contain;}
+    .champions{background:#d4edda;}
+    .europa{background:#fff3cd;}
+    .relegation{background:#ffe5b4;}
+    .abstieg{background:#f8d7da;}
     th:nth-child(1),td:nth-child(1){width:3%;}
     th:nth-child(2),td:nth-child(2){width:35%;text-align:left;padding-left:.8rem;}
     th:nth-child(3),td:nth-child(3){width:8%;}
@@ -67,20 +36,23 @@
     th:nth-child(6),td:nth-child(6){width:8%;}
     th:nth-child(7),td:nth-child(7){width:8%;}
     th:nth-child(8),td:nth-child(8){width:10%;}
-
     .fade-in{animation:fadeIn .6s ease-out;}
+    .slide-down{animation:slideDown .5s ease-out;}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
   </style>
 </head>
 
 <body>
 
-<h2>Bundesliga‑Tabelle (Live)</h2>
+<h2>1. Bundesliga‑Tabelle</h2>
 
 <div class="season-select">
   <label for="season">Saison:</label>
   <select id="season"></select>
 </div>
+
+<p class="info">Aktueller Spieltag: <span id="matchday">‑</span> / <span id="totalMatchdays">34</span></p>
 
 <p class="loader">Lade Daten …</p>
 
@@ -94,17 +66,25 @@
   <tbody></tbody>
 </table>
 
+<div class="info" style="margin-top:1rem;">
+  <strong>Legende:</strong>
+  <ul style="list-style:none;padding-left:0;">
+    <li><span style="display:inline-block;width:12px;height:12px;background:#d4edda;margin-right:6px;"></span>Champions‑League (Plätze 1‑4)</li>
+    <li><span style="display:inline-block;width:12px;height:12px;background:#fff3cd;margin-right:6px;"></span>Europa‑League (Plätze 5‑6)</li>
+    <li><span style="display:inline-block;width:12px;height:12px;background:#ffe5b4;margin-right:6px;"></span>Relegations‑Play‑off (Platz 16)</li>
+    <li><span style="display:inline-block;width:12px;height:12px;background:#f8d7da;margin-right:6px;"></span>Direkter Abstieg (Plätze 17‑18)</li>
+  </ul>
+</div>
+
 <script>
   const seasonSelect = document.getElementById('season');
+  const matchdaySpan = document.getElementById('matchday');
 
-  // ----- 1️⃣ Aktuelles Datum & Laufende Saison -----
   const now = new Date();
   const nowYear = now.getFullYear();
-  const nowMonth = now.getMonth() + 1;          // Jan = 1
-
+  const nowMonth = now.getMonth() + 1;
   const currentSeasonStart = nowMonth >= 7 ? nowYear : nowYear - 1;
 
-  // ----- 2️⃣ Dropdown‑Optionen (letzte 5 + aktuelle + nächste) -----
   const start = nowYear - 5;
   const end   = nowYear + 1;
   for (let yr = start; yr <= end; yr++) {
@@ -113,13 +93,24 @@
     opt.textContent = `${yr}/${yr+1}`;
     seasonSelect.appendChild(opt);
   }
-  seasonSelect.value = currentSeasonStart;      // laufende Saison vorauswählen
+  seasonSelect.value = currentSeasonStart;
 
-  // ----- 3️⃣ Tabelle per API laden -----
+  function loadMatchday(seasonStart){
+    const url = `https://api.openligadb.de/getcurrentgroup/bl1/${seasonStart}`;
+    fetch(url)
+      .then(r=>r.json())
+      .then(data=>{
+        const group = Array.isArray(data) ? data[0] : data;
+        const id = group?.groupOrderID ?? '‑';
+        matchdaySpan.textContent = id;
+      })
+      .catch(()=>{matchdaySpan.textContent='‑';});
+  }
+
   function loadTable(seasonStartYear){
     const apiUrl = `https://api.openligadb.de/getbltable/bl1/${seasonStartYear}`;
     document.querySelector('.loader').textContent = 'Lade Daten …';
-    document.title = `Bundesliga‑Tabelle ${seasonStartYear}/${seasonStartYear+1}`;
+    document.title = `1. Bundesliga‑Tabelle ${seasonStartYear}/${seasonStartYear+1}`;
 
     fetch(apiUrl)
       .then(r => r.json())
@@ -127,20 +118,18 @@
         document.querySelector('.loader').textContent = '';
         const tbody = document.querySelector('#tbl tbody');
         tbody.innerHTML = '';
-
         data.forEach((team, i) => {
           const tr = document.createElement('tr');
-          tr.classList.add('fade-in');
-
-          const pos = i + 1;                 // 1‑basiert
+          tr.classList.add('fade-in','slide-down');
+          const pos = i + 1;
           if (pos <= 4)          tr.classList.add('champions');
           else if (pos <= 6)     tr.classList.add('europa');
           else if (pos === 16)   tr.classList.add('relegation');
           else if (pos >= 17)    tr.classList.add('abstieg');
-
+          const logo = team.teamIconUrl ? `<img src="${team.teamIconUrl}" alt="${team.teamName} Logo">` : '';
           tr.innerHTML = `
             <td>${pos}</td>
-            <td>${team.teamName}</td>
+            <td class="team-cell">${logo}<span>${team.teamName}</span></td>
             <td>${team.matches}</td>
             <td>${team.won}</td>
             <td>${team.draw}</td>
@@ -157,11 +146,15 @@
       });
   }
 
-  // ----- 4️⃣ Dropdown‑Change‑Event -----
-  seasonSelect.addEventListener('change', e => loadTable(e.target.value));
+  seasonSelect.addEventListener('change', e => {
+    const s = e.target.value;
+    loadTable(s);
+    loadMatchday(s);
+  });
 
-  // ----- 5️⃣ Beim ersten Öffnen aktuelle Saison anzeigen -----
-  loadTable(seasonSelect.value);
+  const startSeason = seasonSelect.value;
+  loadTable(startSeason);
+  loadMatchday(startSeason);
 </script>
 
 </body>
