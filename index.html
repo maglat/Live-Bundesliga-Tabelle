@@ -208,7 +208,7 @@
       .then(r=>r.json())
       .then(data=>{
         const group = Array.isArray(data) ? data[0] : data;
-        const id = group?.groupOrderID ?? '‑';
+        const id = group?.groupOrderID || '‑';
         matchdaySpan.textContent = id;
       })
       .catch(()=>{matchdaySpan.textContent='‑';});
