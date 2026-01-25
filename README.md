@@ -4,7 +4,12 @@ Ein einfaches HTML‑Projekt, das dynamisch die aktuelle Bundesliga‑Tabelle pe
 
 ## Features
 
-### v1.1 (vorherige Version)
+### v1.4 (neueste Version)
+- **Hover‑Animationen** für Tabellenzeilen: sanftes Anheben mit Schatten beim Hovern
+- **Buy Me a Coffee** Button: stylischer Button in der oberen rechten Ecke für Spenden
+- **Verbesserte Transitions**: sanftere Animationen mit cubic-bezier easing
+
+### v1.3 (vorherige Version)
 - **Saison‑Dropdown** – wähle die gewünschte Saison, aktuelle Saison ist vorausgewählt.
 - **Farbliche Highlights** für Champions‑League, Europa‑League, Relegations‑Play‑off und Abstiegsplätze.
 - **Dezente Zeilenlinien** anstelle von Zebra‑Striping.

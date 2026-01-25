@@ -10,6 +10,7 @@
       background:#f5f7fa;
       margin:2rem;
       color:#333;
+      position:relative;
     }
     h2{color:#2c3e50;margin-bottom:.3rem;}
     .loader{font-size:.9rem;color:#777;margin-top:.5rem;}
@@ -51,10 +52,18 @@
       font-weight:600;
     }
     tbody tr{
-      transition:background .2s;
+      transition:all .25s cubic-bezier(0.4, 0, 0.2, 1);
       border-bottom:1px solid #eaeaea;
+      cursor:default;
     }
     tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{
+      transform:translateY(-2px);
+      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    }
+    tbody tr:hover td{
+      color:#2c3e50;
+    }
 
     .team-cell{
       display:flex;align-items:center;gap:.4rem;
@@ -82,10 +91,52 @@
     .slide-down{animation:slideDown .5s ease-out;}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+    /* Buy Me a Coffee Button */
+    .bmc-btn{
+      position:absolute;
+      top:0;
+      right:0;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 16px;
+      font-family:'Quicksand',Arial,sans-serif;
+      font-size:.9rem;
+      font-weight:600;
+      color:#292929;
+      background:#FFDD00;
+      border:2px solid #292929;
+      border-radius:20px;
+      text-decoration:none;
+      transition:all .2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow:2px 2px 0 #292929;
+      z-index:100;
+    }
+    .bmc-btn:hover{
+      transform:translate(-2px,-2px);
+      box-shadow:4px 4px 0 #292929;
+    }
+    .bmc-btn:active{
+      transform:translate(0,0);
+      box-shadow:2px 2px 0 #292929;
+    }
+    .bmc-btn svg{
+      width:18px;
+      height:18px;
+    }
   </style>
 </head>
 
 <body>
+
+<a href="https://buymeacoffee.com/maglat" target="_blank" class="bmc-btn" aria-label="Buy me a coffee">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#292929">
+    <path d="M4.5 3h15a1.5 1.5 0 0 1 1.5 1.5v1.5H3V4.5A1.5 1.5 0 0 1 4.5 3zm2.25 5.25a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5h-4.5zm1.5 3a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5h-4.5z"/>
+    <path d="M4.5 12h15v6a4.5 4.5 0 0 1-4.5 4.5h-6A4.5 4.5 0 0 1 4.5 18v-6z"/>
+  </svg>
+  Buy me a coffee
+</a>
 
 <h2 id="pageTitle">1. Bundesliga‑Tabelle</h2>
 
