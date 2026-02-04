@@ -1,282 +1,99 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>1. Bundesliga‑Tabelle</title>
-
-  <style>
-    body{
-      font-family:'Quicksand',Arial,sans-serif;
-      background:#f5f7fa;
-      margin:2rem;
-      color:#333;
-      position:relative;
-    }
-    h2{color:#2c3e50;margin-bottom:.3rem;}
-    .loader{font-size:.9rem;color:#777;margin-top:.5rem;}
-
-    /* Flex‑Container für beide Dropdowns */
-    .controls{
-      display:flex;align-items:center;gap:1rem;margin-bottom:1rem;
-    }
-    label{font-size:.95rem;}
-    select{
-      padding:.4rem .6rem;
-      font-size:.95rem;
-      border:1px solid #bbb;
-      border-radius:4px;
-      background:#fff;
-    }
-
-    .info{margin:.6rem 0;font-size:.95rem;color:#555;}
-    .info span{font-weight:600;}
-
-    /* Tabelle */
-    table{
-      border-collapse:separate;
-      border-spacing:0;
-      width:100%;max-width:860px;
-      background:#fff;
-      border-radius:8px;
-      overflow:hidden;
-      box-shadow:0 2px 6px rgba(0,0,0,.1);
-    }
-    th,td{
-      padding:.75rem .5rem;
-      text-align:center;
-      font-size:.94rem;
-    }
-    th{
-      background:#2c3e50;
-      color:#fff;
-      font-weight:600;
-    }
-    tbody tr{
-      transition:all .25s cubic-bezier(0.4, 0, 0.2, 1);
-      border-bottom:1px solid #eaeaea;
-      cursor:default;
-    }
-    tbody tr:last-child{border-bottom:none;}
-    tbody tr:hover{
-      transform:translateY(-2px);
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
-    }
-    tbody tr:hover td{
-      color:#2c3e50;
-    }
-
-    .team-cell{
-      display:flex;align-items:center;gap:.4rem;
-    }
-    .team-cell img{
-      width:24px;height:24px;object-fit:contain;
-    }
-
-    /* Highlight‑Klassen */
-    .champions{background:#d4edda;}
-    .europa{background:#fff3cd;}
-    .relegation{background:#ffe5b4;}
-    .abstieg{background:#f8d7da;}
-
-    th:nth-child(1),td:nth-child(1){width:3%;}
-    th:nth-child(2),td:nth-child(2){width:35%;text-align:left;padding-left:.8rem;}
-    th:nth-child(3),td:nth-child(3){width:8%;}
-    th:nth-child(4),td:nth-child(4){width:8%;}
-    th:nth-child(5),td:nth-child(5){width:8%;}
-    th:nth-child(6),td:nth-child(6){width:8%;}
-    th:nth-child(7),td:nth-child(7){width:8%;}
-    th:nth-child(8),td:nth-child(8){width:10%;}
-
-    .fade-in{animation:fadeIn .6s ease-out;}
-    .slide-down{animation:slideDown .5s ease-out;}
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    @keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-    /* Buy Me a Coffee Button */
-    .bmc-btn{
-      position:absolute;
-      top:0;
-      right:0;
-      display:flex;
-      align-items:center;
-      gap:6px;
-      padding:8px 16px;
-      font-family:'Quicksand',Arial,sans-serif;
-      font-size:.9rem;
-      font-weight:600;
-      color:#292929;
-      background:#FFDD00;
-      border:2px solid #292929;
-      border-radius:20px;
-      text-decoration:none;
-      transition:all .2s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow:2px 2px 0 #292929;
-      z-index:100;
-    }
-    .bmc-btn:hover{
-      transform:translate(-2px,-2px);
-      box-shadow:4px 4px 0 #292929;
-    }
-    .bmc-btn:active{
-      transform:translate(0,0);
-      box-shadow:2px 2px 0 #292929;
-    }
-    .bmc-btn svg{
-      width:18px;
-      height:18px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1. Bundesliga-Tabelle</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
+    <header class="header">
+        <div class="header-content">
+            <h1>1. Bundesliga-Tabelle</h1>
+            
+            <!-- Controls -->
+            <div class="controls">
+                <div class="control-group">
+                    <label for="league-select">Liga:</label>
+                    <select id="league-select">
+                        <option value="bl1">1. Bundesliga</option>
+                        <option value="bl2">2. Bundesliga</option>
+                        <option value="bl3">3. Liga</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="season-select">Saison:</label>
+                    <select id="season-select"></select>
+                </div>
+                
+                <button id="dark-mode-toggle" class="btn-icon" title="Dark Mode umschalten">
+                    <span class="icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
 
-<a href="https://buymeacoffee.com/maglat" target="_blank" class="bmc-btn" aria-label="Buy me a coffee">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#292929">
-    <path d="M4.5 3h15a1.5 1.5 0 0 1 1.5 1.5v1.5H3V4.5A1.5 1.5 0 0 1 4.5 3zm2.25 5.25a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5h-4.5zm1.5 3a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5h-4.5z"/>
-    <path d="M4.5 12h15v6a4.5 4.5 0 0 1-4.5 4.5h-6A4.5 4.5 0 0 1 4.5 18v-6z"/>
-  </svg>
-  Buy me a coffee
-</a>
+    <main class="main-content">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span id="current-matchday" class="status-item">Aktueller Spieltag: - / 34</span>
+            <span id="last-updated" class="status-item"></span>
+        </div>
 
-<h2 id="pageTitle">1. Bundesliga‑Tabelle</h2>
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading-container">
+            <div class="spinner"></div>
+            <p>Lade Daten…</p>
+        </div>
 
-<div class="controls">
-  <label for="league">Liga:</label>
-  <select id="league">
-    <option value="bl1">1. Bundesliga</option>
-    <option value="bl2">2. Bundesliga</option>
-    <option value="bl3">3. Liga</option>
-  </select>
+        <!-- Error Message -->
+        <div id="error-message" class="error-container hidden">
+            <span class="error-icon">⚠️</span>
+            <p id="error-text"></p>
+            <button id="retry-btn" class="btn btn-primary">Erneut versuchen</button>
+        </div>
 
-  <label for="season">Saison:</label>
-  <select id="season"></select>
-</div>
+        <!-- Table Container -->
+        <div id="table-container" class="table-container hidden">
+            <table class="league-table" id="league-table">
+                <thead>
+                    <tr>
+                        <th class="text-left">#</th>
+                        <th class="text-left">Mannschaft</th>
+                        <th>Sp</th>
+                        <th>SU</th>
+                        <th>V+/-</th>
+                        <th>Pkt</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </main>
 
-<p class="info">
-  Aktueller Spieltag: <span id="matchday">‑</span> / <span id="totalMatchdays">34</span>
-</p>
+    <!-- Legend -->
+    <aside class="legend">
+        <h3>Legende:</h3>
+        <ul class="legend-list">
+            <li><span class="legend-color cl"></span> Champions-League (Plätze 1-4)</li>
+            <li><span class="legend-color el"></span> Europa-League (Plätze 5-6)</li>
+            <li><span class="legend-color rel"></span> Relegations-Play-off (Platz 16)</li>
+            <li><span class="legend-color ab"></span> Direkter Abstieg (Plätze 17-18)</li>
+        </ul>
+    </aside>
 
-<p class="loader">Lade Daten …</p>
+    <!-- Footer -->
+    <footer class="footer">
+        <a href="https://www.buymeacoffee.com/" target="_blank" class="btn-coffee">
+            ☕ Buy me a coffee
+        </a>
+        <p class="footer-note">Datenquelle: OpenLigaDB API</p>
+    </footer>
 
-<table id="tbl">
-  <thead>
-    <tr>
-      <th>#</th><th>Mannschaft</th><th>Sp.</th><th>S</th><th>U</th>
-      <th>V</th><th>+/-</th><th>Pkt.</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
-<div class="info" style="margin-top:1rem;">
-  <strong>Legende:</strong>
-  <ul style="list-style:none;padding-left:0;">
-    <li><span style="display:inline-block;width:12px;height:12px;background:#d4edda;margin-right:6px;"></span>Champions‑League (Plätze 1‑4)</li>
-    <li><span style="display:inline-block;width:12px;height:12px;background:#fff3cd;margin-right:6px;"></span>Europa‑League (Plätze 5‑6)</li>
-    <li><span style="display:inline-block;width:12px;height:12px;background:#ffe5b4;margin-right:6px;"></span>Relegations‑Play‑off (Platz 16)</li>
-    <li><span style="display:inline-block;width:12px;height:12px;background:#f8d7da;margin-right:6px;"></span>Direkter Abstieg (Plätze 17‑18)</li>
-  </ul>
-</div>
-
-<script>
-  const leagueSelect  = document.getElementById('league');
-  const seasonSelect  = document.getElementById('season');
-  const matchdaySpan  = document.getElementById('matchday');
-  const pageTitle     = document.getElementById('pageTitle');
-
-  // ---- 1️⃣ Aktuelles Datum & laufende Saison ----
-  const now      = new Date();
-  const nowYear  = now.getFullYear();
-  const nowMonth = now.getMonth() + 1; // Jan = 1
-  const currentSeasonStart = nowMonth >= 7 ? nowYear : nowYear - 1; // ab Juli neue Saison
-
-  // ---- 2️⃣ Dropdown‑Optionen (Saison) ----
-  const start = nowYear - 5;
-  const end   = nowYear + 1;
-  for (let yr = start; yr <= end; yr++) {
-    const opt = document.createElement('option');
-    opt.value = yr;
-    opt.textContent = `${yr}/${yr+1}`;
-    seasonSelect.appendChild(opt);
-  }
-  seasonSelect.value = currentSeasonStart; // aktuelle Saison vorselektieren
-
-  // ---- 3️⃣ Hilfs‑Funktion: Spieltag holen ----------
-  function loadMatchday(season, league){
-    const url = `https://api.openligadb.de/getcurrentgroup/${league}/${season}`;
-    fetch(url)
-      .then(r=>r.json())
-      .then(data=>{
-        const group = Array.isArray(data) ? data[0] : data;
-        const id = group?.groupOrderID || '‑';
-        matchdaySpan.textContent = id;
-      })
-      .catch(()=>{matchdaySpan.textContent='‑';});
-  }
-
-  // ---- 4️⃣ Tabelle laden ----------
-  function loadTable(season, league){
-    const apiUrl = `https://api.openligadb.de/getbltable/${league}/${season}`;
-    document.querySelector('.loader').textContent = 'Lade Daten …';
-    const leagueName = league === 'bl1' ? '1. Bundesliga'
-                    : league === 'bl2' ? '2. Bundesliga'
-                    : '3. Liga';
-    document.title = `${leagueName} – ${season}/${season+1}`;
-    pageTitle.textContent = `${leagueName}‑Tabelle`;
-
-    fetch(apiUrl)
-      .then(r=>r.json())
-      .then(data=>{
-        document.querySelector('.loader').textContent = '';
-        const tbody = document.querySelector('#tbl tbody');
-        tbody.innerHTML = '';
-
-        data.forEach((team,i)=>{
-          const tr = document.createElement('tr');
-          tr.classList.add('fade-in','slide-down');
-
-          const pos = i+1;
-          if (pos<=4)          tr.classList.add('champions');
-          else if (pos<=6)     tr.classList.add('europa');
-          else if (pos===16)   tr.classList.add('relegation');
-          else if (pos>=17)    tr.classList.add('abstieg');
-
-          const logo = team.teamIconUrl
-                     ? `<img src="${team.teamIconUrl}" alt="${team.teamName} Logo">`
-                     : '';
-          tr.innerHTML = `
-            <td>${pos}</td>
-            <td class="team-cell">${logo}<span>${team.teamName}</span></td>
-            <td>${team.matches}</td>
-            <td>${team.won}</td>
-            <td>${team.draw}</td>
-            <td>${team.lost}</td>
-            <td>${team.goalDiff}</td>
-            <td>${team.points}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-      })
-      .catch(err=>{
-        console.error(err);
-        document.querySelector('.loader').textContent = '❌ Daten konnten nicht geladen werden.';
-      });
-  }
-
-  // ---- 5️⃣ Event‑Handler ----------
-  function refresh(){
-    const season = seasonSelect.value;
-    const league  = leagueSelect.value;
-    loadTable(season, league);
-    loadMatchday(season, league);
-  }
-
-  leagueSelect.addEventListener('change', refresh);
-  seasonSelect.addEventListener('change', refresh);
-
-  // ---- 6️⃣ Initial‑Ladung ----------
-  refresh();
-</script>
-
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
