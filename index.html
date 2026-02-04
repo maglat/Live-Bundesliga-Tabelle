@@ -3,101 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <title>1. Bundesliga‑Tabelle</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* Reset & CSS Variables */
+    *,*::before,*::after{box-sizing:border-box;}
+    :root{
+      --bg-color:#f5f7fa;
+      --card-bg:#fff;
+      --text-primary:#333;
+      --text-secondary:#555;
+      --accent:#2c3e50;
+      --accent-hover:#1a252f;
+      --border:#eaeaea;
+      --shadow:0 2px 6px rgba(0,0,0,.1);
+      --shadow-hover:0 6px 20px rgba(0,0,0,.12);
+      --champions:#d4edda;
+      --europa:#fff3cd;
+      --relegation:#ffe5b4;
+      --abstieg:#f8d7da;
+      --highlight:#2c3e50;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg-color:#1a1a2e;
+        --card-bg:#16213e;
+        --text-primary:#e0e0e0;
+        --text-secondary:#a0a0a0;
+        --accent:#0f3460;
+        --accent-hover:#16213e;
+        --border:#2a2a4a;
+        --shadow:0 2px 6px rgba(0,0,0,.3);
+        --shadow-hover:0 6px 20px rgba(0,0,0,.4);
+      }
+    }
     body{
       font-family:'Quicksand',Arial,sans-serif;
-      background:#f5f7fa;
-      margin:2rem;
-      color:#333;
-      position:relative;
-    }
-    h2{color:#2c3e50;margin-bottom:.3rem;}
-    .loader{font-size:.9rem;color:#777;margin-top:.5rem;}
-
-    /* Flex‑Container für beide Dropdowns */
-    .controls{
-      display:flex;align-items:center;gap:1rem;margin-bottom:1rem;
-    }
-    label{font-size:.95rem;}
-    select{
-      padding:.4rem .6rem;
-      font-size:.95rem;
-      border:1px solid #bbb;
-      border-radius:4px;
-      background:#fff;
-    }
-
-    .info{margin:.6rem 0;font-size:.95rem;color:#555;}
-    .info span{font-weight:600;}
-
-    /* Tabelle */
-    table{
-      border-collapse:separate;
-      border-spacing:0;
-      width:100%;max-width:860px;
-      background:#fff;
-      border-radius:8px;
-      overflow:hidden;
-      box-shadow:0 2px 6px rgba(0,0,0,.1);
-    }
-    th,td{
-      padding:.75rem .5rem;
-      text-align:center;
-      font-size:.94rem;
-    }
-    th{
-      background:#2c3e50;
-      color:#fff;
-      font-weight:600;
-    }
-    tbody tr{
-      transition:all .25s cubic-bezier(0.4, 0, 0.2, 1);
-      border-bottom:1px solid #eaeaea;
-      cursor:default;
-    }
-    tbody tr:last-child{border-bottom:none;}
-    tbody tr:hover{
-      transform:translateY(-2px);
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
-    }
-    tbody tr:hover td{
-      color:#2c3e50;
-    }
-
-    .team-cell{
-      display:flex;align-items:center;gap:.4rem;
-    }
-    .team-cell img{
-      width:24px;height:24px;object-fit:contain;
-    }
-
-    /* Highlight‑Klassen */
-    .champions{background:#d4edda;}
-    .europa{background:#fff3cd;}
-    .relegation{background:#ffe5b4;}
-    .abstieg{background:#f8d7da;}
-
-    th:nth-child(1),td:nth-child(1){width:3%;}
-    th:nth-child(2),td:nth-child(2){width:35%;text-align:left;padding-left:.8rem;}
-    th:nth-child(3),td:nth-child(3){width:8%;}
-    th:nth-child(4),td:nth-child(4){width:8%;}
-    th:nth-child(5),td:nth-child(5){width:8%;}
-    th:nth-child(6),td:nth-child(6){width:8%;}
-    th:nth-child(7),td:nth-child(7){width:8%;}
-    th:nth-child(8),td:nth-child(8){width:10%;}
-
-    .fade-in{animation:fadeIn .6s ease-out;}
-    .slide-down{animation:slideDown .5s ease-out;}
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    @keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-    /* Buy Me a Coffee Button */
-    .bmc-btn{
-      position:absolute;
-      top:0;
-      right:0;
+      background:var(--bg-color);
+      color:var(--text-primary);
+      margin:0;
+      min-height:100vh;
       display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding:2rem 1rem;
+      transition:background-color .3s, color .3s;
+    }
+    .container{
+      width:100%;
+      max-width:860px;
+    }
+    /* Header */
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:1rem;
+      margin-bottom:1.5rem;
+      padding:0 .3rem;
+    }
+    h2{
+      color:var(--text-primary);
+      margin:0;
+      font-size:1.7rem;
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      transition:color .3s;
+    }
+    .header-icon{
+      width:32px;height:32px;
+      background:var(--highlight);
+      border-radius:50%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      color:#fff;
+      font-size:.8rem;
+      font-weight:700;
+    }
+    /* Button */
+    .bmc-btn{
+      display:inline-flex;
       align-items:center;
       gap:6px;
       padding:8px 16px;
@@ -109,9 +96,10 @@
       border:2px solid #292929;
       border-radius:20px;
       text-decoration:none;
-      transition:all .2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition:transform .2s cubic-bezier(0.4,0,0.2,1),
+                  box-shadow .2s cubic-bezier(0.4,0,0.2,1),
+                  background .2s;
       box-shadow:2px 2px 0 #292929;
-      z-index:100;
     }
     .bmc-btn:hover{
       transform:translate(-2px,-2px);
@@ -121,162 +109,403 @@
       transform:translate(0,0);
       box-shadow:2px 2px 0 #292929;
     }
-    .bmc-btn svg{
-      width:18px;
-      height:18px;
+    /* Controls */
+    .controls{
+      display:flex;
+      align-items:center;
+      gap:1rem;
+      margin-bottom:1rem;
+      flex-wrap:wrap;
+      padding:0 .3rem;
     }
+    .control-group{
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+    }
+    label{
+      font-size:.95rem;
+      color:var(--text-secondary);
+    }
+    select{
+      padding:.5rem .6rem;
+      font-size:.95rem;
+      border:1px solid #bbb;
+      border-radius:4px;
+      background:var(--card-bg);
+      color:var(--text-primary);
+      cursor:pointer;
+      transition:border-color .2s, box-shadow .2s;
+    }
+    select:hover,select:focus{
+      border-color:var(--highlight);
+      outline:none;
+      box-shadow:0 0 0 3px rgba(44,62,80,.15);
+    }
+    /* Refresh Button */
+    .refresh-btn{
+      background:transparent;
+      border:1px solid var(--border);
+      color:var(--text-secondary);
+      padding:.5rem .8rem;
+      border-radius:4px;
+      cursor:pointer;
+      font-size:.9rem;
+      display:flex;
+      align-items:center;
+      gap:.4rem;
+      transition:all .2s;
+    }
+    .refresh-btn:hover{
+      border-color:var(--highlight);
+      color:var(--text-primary);
+      background:rgba(44,62,80,.05);
+    }
+    .refresh-btn.loading svg{
+      animation:spin .8s linear infinite;
+    }
+    @keyframes spin{100%{transform:rotate(360deg);}}
+    /* Info */
+    .info{
+      margin:.6rem 0 1.3rem;
+      font-size:.95rem;
+      color:var(--text-secondary);
+      padding:0 .3rem;
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+    }
+    .info span{font-weight:600;color:var(--text-primary);}
+    /* Loading */
+    .loader{
+      font-size:.9rem;
+      color:var(--text-secondary);
+      padding:2rem;
+      text-align:center;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:.6rem;
+    }
+    .loader:empty{padding:0;}
+    .loader-spinner{
+      width:20px;height:20px;
+      border:2px solid var(--border);
+      border-top-color:var(--highlight);
+      border-radius:50%;
+      animation:spin .8s linear infinite;
+    }
+    @keyframes spin{100%{transform:rotate(360deg);}}
+    /* Table */
+    table{
+      border-collapse:separate;
+      border-spacing:0;
+      width:100%;
+      background:var(--card-bg);
+      border-radius:8px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      transition:box-shadow .3s;
+    }
+    table:hover{
+      box-shadow:var(--shadow-hover);
+    }
+    th,td{
+      padding:.75rem .5rem;
+      text-align:center;
+      font-size:.94rem;
+      transition:color .2s;
+    }
+    th{
+      background:var(--highlight);
+      color:#fff;
+      font-weight:600;
+    }
+    tbody tr{
+      border-bottom:1px solid var(--border);
+      transition:transform .25s cubic-bezier(0.4,0,0.2,1),
+                  box-shadow .25s,
+                  background-color .25s;
+    }
+    tbody tr:last-child{border-bottom:none;}
+    tbody tr:hover{
+      transform:translateY(-3px);
+      box-shadow:var(--shadow-hover);
+      background:rgba(44,62,80,.04);
+    }
+    .team-cell{
+      display:flex;
+      align-items:center;
+      gap:.4rem;
+    }
+    .team-cell img{
+      width:24px;
+      height:24px;
+      object-fit:contain;
+      transition:transform .2s;
+    }
+    tbody tr:hover .team-cell img{
+      transform:scale(1.1);
+    }
+    /* Highlights */
+    .champions{background:var(--champions) !important;}
+    .europa{background:var(--europa) !important;}
+    .relegation{background:var(--relegation) !important;}
+    .abstieg{background:var(--abstieg) !important;}
+    /* Columns */
+    th:nth-child(1),td:nth-child(1){width:3%;}
+    th:nth-child(2),td:nth-child(2){width:35%;text-align:left;padding-left:.8rem;}
+    th:nth-child(3),td:nth-child(3){width:8%;}
+    th:nth-child(4),td:nth-child(4){width:8%;}
+    th:nth-child(5),td:nth-child(5){width:8%;}
+    th:nth-child(6),td:nth-child(6){width:8%;}
+    th:nth-child(7),td:nth-child(7){width:8%;}
+    th:nth-child(8),td:nth-child(8){width:10%;font-weight:600;}
+    /* Legend */
+    .legend{
+      margin-top:1.5rem;
+      padding:1.2rem 1rem;
+      background:var(--card-bg);
+      border-radius:8px;
+      box-shadow:var(--shadow);
+      transition:background .3s, box-shadow .3s;
+    }
+    .legend-title{
+      font-size:.85rem;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--text-secondary);
+      margin-bottom:.8rem;
+      transition:color .3s;
+    }
+    .legend-items{
+      display:flex;
+      flex-wrap:wrap;
+      gap:1.2rem;
+    }
+    .legend-item{
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      font-size:.9rem;
+      color:var(--text-secondary);
+      transition:color .2s;
+    }
+    .legend-color{
+      width:12px;
+      height:12px;
+      border-radius:3px;
+    }
+    /* Responsive */
+    @media (max-width:640px){
+      body{padding:1rem;}
+      h2{font-size:1.4rem;}
+      .controls{gap:.8rem;}
+      label,select,th,td,.info,.legend-item{font-size:.85rem;}
+      th,td{padding:.6rem .35rem;}
+    }
+    @media (max-width:440px){
+      th:nth-child(2),td:nth-child(2){width:30%;padding-left:.5rem;}
+      .legend-items{gap:.8rem;}
+    }
+    /* Animations */
+    .fade-in{animation:fadeIn .6s ease-out;}
+    .slide-down{animation:slideDown .5s ease-out;}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
+  <div class="container">
+    <header>
+      <h2><span class="header-icon">🇩🇪</span>1. Bundesliga‑Tabelle</h2>
+      <a href="https://buymeacoffee.com/maglat" target="_blank" class="bmc-btn" aria-label="Buy me a coffee">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#292929" width="18" height="18">
+          <path d="M4.5 3h15a1.5 1.5 0 0 1 1.5 1.5v1.5H3V4.5A1.5 1.5 0 0 1 4.5 3zm2.25 5.25a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5h-4.5zm1.5 3a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5h-4.5z"/>
+          <path d="M4.5 12h15v6a4.5 4.5 0 0 1-4.5 4.5h-6A4.5 4.5 0 0 1 4.5 18v-6z"/>
+        </svg>
+        Buy me a coffee
+      </a>
+    </header>
+    
+    <div class="controls">
+      <div class="control-group">
+        <label for="league">Liga:</label>
+        <select id="league">
+          <option value="bl1">1. Bundesliga</option>
+          <option value="bl2">2. Bundesliga</option>
+          <option value="bl3">3. Liga</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="season">Saison:</label>
+        <select id="season"></select>
+      </div>
+      <button class="refresh-btn" id="refreshBtn" aria-label="Tabelle aktualisieren">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+          <path d="M21 3v5h-5"/>
+        </svg>
+        Aktualisieren
+      </button>
+    </div>
 
-<a href="https://buymeacoffee.com/maglat" target="_blank" class="bmc-btn" aria-label="Buy me a coffee">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#292929">
-    <path d="M4.5 3h15a1.5 1.5 0 0 1 1.5 1.5v1.5H3V4.5A1.5 1.5 0 0 1 4.5 3zm2.25 5.25a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5h-4.5zm1.5 3a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5h-4.5z"/>
-    <path d="M4.5 12h15v6a4.5 4.5 0 0 1-4.5 4.5h-6A4.5 4.5 0 0 1 4.5 18v-6z"/>
-  </svg>
-  Buy me a coffee
-</a>
+    <p class="info">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      Aktueller Spieltag: <span id="matchday">‑</span> / <span id="totalMatchdays">34</span>
+    </p>
 
-<h2 id="pageTitle">1. Bundesliga‑Tabelle</h2>
+    <p class="loader" aria-live="polite"><span class="loader-spinner"></span> Lade Daten …</p>
 
-<div class="controls">
-  <label for="league">Liga:</label>
-  <select id="league">
-    <option value="bl1">1. Bundesliga</option>
-    <option value="bl2">2. Bundesliga</option>
-    <option value="bl3">3. Liga</option>
-  </select>
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Mannschaft</th>
+          <th>Sp.</th>
+          <th>S</th>
+          <th>U</th>
+          <th>V</th>
+          <th>+/-</th>
+          <th>Pkt.</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
-  <label for="season">Saison:</label>
-  <select id="season"></select>
-</div>
+    <div class="legend">
+      <div class="legend-title">Legende</div>
+      <div class="legend-items">
+        <div class="legend-item">
+          <span class="legend-color" style="background:#d4edda;"></span>
+          Champions‑League (Plätze 1‑4)
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background:#fff3cd;"></span>
+          Europa‑League (Plätze 5‑6)
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background:#ffe5b4;"></span>
+          Relegations‑Play‑off (Platz 16)
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background:#f8d7da;"></span>
+          Direkter Abstieg (Plätze 17‑18)
+        </div>
+      </div>
+    </div>
+  </div>
 
-<p class="info">
-  Aktueller Spieltag: <span id="matchday">‑</span> / <span id="totalMatchdays">34</span>
-</p>
-
-<p class="loader">Lade Daten …</p>
-
-<table id="tbl">
-  <thead>
-    <tr>
-      <th>#</th><th>Mannschaft</th><th>Sp.</th><th>S</th><th>U</th>
-      <th>V</th><th>+/-</th><th>Pkt.</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
-<div class="info" style="margin-top:1rem;">
-  <strong>Legende:</strong>
-  <ul style="list-style:none;padding-left:0;">
-    <li><span style="display:inline-block;width:12px;height:12px;background:#d4edda;margin-right:6px;"></span>Champions‑League (Plätze 1‑4)</li>
-    <li><span style="display:inline-block;width:12px;height:12px;background:#fff3cd;margin-right:6px;"></span>Europa‑League (Plätze 5‑6)</li>
-    <li><span style="display:inline-block;width:12px;height:12px;background:#ffe5b4;margin-right:6px;"></span>Relegations‑Play‑off (Platz 16)</li>
-    <li><span style="display:inline-block;width:12px;height:12px;background:#f8d7da;margin-right:6px;"></span>Direkter Abstieg (Plätze 17‑18)</li>
-  </ul>
-</div>
-
-<script>
-  const leagueSelect  = document.getElementById('league');
-  const seasonSelect  = document.getElementById('season');
-  const matchdaySpan  = document.getElementById('matchday');
-  const pageTitle     = document.getElementById('pageTitle');
-
-  // ---- 1️⃣ Aktuelles Datum & laufende Saison ----
-  const now      = new Date();
-  const nowYear  = now.getFullYear();
-  const nowMonth = now.getMonth() + 1; // Jan = 1
-  const currentSeasonStart = nowMonth >= 7 ? nowYear : nowYear - 1; // ab Juli neue Saison
-
-  // ---- 2️⃣ Dropdown‑Optionen (Saison) ----
-  const start = nowYear - 5;
-  const end   = nowYear + 1;
-  for (let yr = start; yr <= end; yr++) {
-    const opt = document.createElement('option');
-    opt.value = yr;
-    opt.textContent = `${yr}/${yr+1}`;
-    seasonSelect.appendChild(opt);
-  }
-  seasonSelect.value = currentSeasonStart; // aktuelle Saison vorselektieren
-
-  // ---- 3️⃣ Hilfs‑Funktion: Spieltag holen ----------
-  function loadMatchday(season, league){
-    const url = `https://api.openligadb.de/getcurrentgroup/${league}/${season}`;
-    fetch(url)
-      .then(r=>r.json())
-      .then(data=>{
-        const group = Array.isArray(data) ? data[0] : data;
-        const id = group?.groupOrderID || '‑';
-        matchdaySpan.textContent = id;
-      })
-      .catch(()=>{matchdaySpan.textContent='‑';});
-  }
-
-  // ---- 4️⃣ Tabelle laden ----------
-  function loadTable(season, league){
-    const apiUrl = `https://api.openligadb.de/getbltable/${league}/${season}`;
-    document.querySelector('.loader').textContent = 'Lade Daten …';
-    const leagueName = league === 'bl1' ? '1. Bundesliga'
-                    : league === 'bl2' ? '2. Bundesliga'
-                    : '3. Liga';
-    document.title = `${leagueName} – ${season}/${season+1}`;
-    pageTitle.textContent = `${leagueName}‑Tabelle`;
-
-    fetch(apiUrl)
-      .then(r=>r.json())
-      .then(data=>{
-        document.querySelector('.loader').textContent = '';
-        const tbody = document.querySelector('#tbl tbody');
-        tbody.innerHTML = '';
-
-        data.forEach((team,i)=>{
-          const tr = document.createElement('tr');
-          tr.classList.add('fade-in','slide-down');
-
-          const pos = i+1;
-          if (pos<=4)          tr.classList.add('champions');
-          else if (pos<=6)     tr.classList.add('europa');
-          else if (pos===16)   tr.classList.add('relegation');
-          else if (pos>=17)    tr.classList.add('abstieg');
-
-          const logo = team.teamIconUrl
-                     ? `<img src="${team.teamIconUrl}" alt="${team.teamName} Logo">`
-                     : '';
-          tr.innerHTML = `
-            <td>${pos}</td>
-            <td class="team-cell">${logo}<span>${team.teamName}</span></td>
-            <td>${team.matches}</td>
-            <td>${team.won}</td>
-            <td>${team.draw}</td>
-            <td>${team.lost}</td>
-            <td>${team.goalDiff}</td>
-            <td>${team.points}</td>
-          `;
-          tbody.appendChild(tr);
+  <script>
+    /* API Docs: https://github.com/matthias-mm/OpenLigaDb */
+    const leagueSelect  = document.getElementById('league');
+    const seasonSelect  = document.getElementById('season');
+    const matchdaySpan  = document.getElementById('matchday');
+    const totalMatchdaysSpan = document.getElementById('totalMatchdays');
+    const refreshBtn = document.getElementById('refreshBtn');
+    // ---- 1️⃣ Current date & season ----
+    const now      = new Date();
+    const nowYear  = now.getFullYear();
+    const nowMonth = now.getMonth() + 1;
+    const currentSeasonStart = nowMonth >= 7 ? nowYear : nowYear - 1;
+    // ---- 2️⃣ Dropdown options (season) ----
+    const start = nowYear - 5;
+    const end   = nowYear + 1;
+    for (let yr = start; yr <= end; yr++) {
+      const opt = document.createElement('option');
+      opt.value = yr;
+      opt.textContent = `${yr}/${yr+1}`;
+      seasonSelect.appendChild(opt);
+    }
+    seasonSelect.value = currentSeasonStart;
+    // ---- 3️⃣ Helper: get current matchday ----------
+    function loadMatchday(season, league){
+      const url = `https://api.openligadb.de/getcurrentgroup/${league}/${season}`;
+      fetch(url)
+        .then(r=>r.json())
+        .then(data=>{
+          const group = Array.isArray(data) ? data[0] : data;
+          const id = group?.groupOrderID || '‑';
+          matchdaySpan.textContent = id;
+          if (group?.groupOrderID) {
+            totalMatchdaysSpan.textContent = 34;
+          }
+        })
+        .catch(()=>{
+          matchdaySpan.textContent='‑';
+          totalMatchdaysSpan.textContent='34';
         });
-      })
-      .catch(err=>{
-        console.error(err);
-        document.querySelector('.loader').textContent = '❌ Daten konnten nicht geladen werden.';
-      });
-  }
-
-  // ---- 5️⃣ Event‑Handler ----------
-  function refresh(){
-    const season = seasonSelect.value;
-    const league  = leagueSelect.value;
-    loadTable(season, league);
-    loadMatchday(season, league);
-  }
-
-  leagueSelect.addEventListener('change', refresh);
-  seasonSelect.addEventListener('change', refresh);
-
-  // ---- 6️⃣ Initial‑Ladung ----------
-  refresh();
-</script>
-
+    }
+    // ---- 4️⃣ Load table ----------
+    function loadTable(season, league){
+      const apiUrl = `https://api.openligadb.de/getbltable/${league}/${season}`;
+      const loader = document.querySelector('.loader');
+      loader.innerHTML = '<span class="loader-spinner"></span> Lade Daten …';
+      const leagueName = league === 'bl1' ? '1. Bundesliga'
+                      : league === 'bl2' ? '2. Bundesliga'
+                      : '3. Liga';
+      document.title = `${leagueName} – ${season}/${season+1}`;
+      fetch(apiUrl)
+        .then(r=>{
+          if (!r.ok) throw new Error('Network response was not ok');
+          return r.json();
+        })
+        .then(data=>{
+          loader.innerHTML = '';
+          const tbody = document.querySelector('#tbl tbody');
+          tbody.innerHTML = '';
+          data.forEach((team,i)=>{
+            const tr = document.createElement('tr');
+            tr.classList.add('fade-in','slide-down');
+            const pos = i+1;
+            if (pos<=4)          tr.classList.add('champions');
+            else if (pos<=6)     tr.classList.add('europa');
+            else if (pos===16)   tr.classList.add('relegation');
+            else if (pos>=17)    tr.classList.add('abstieg');
+            const logo = team.teamIconUrl
+                       ? `<img src="${team.teamIconUrl}" alt="${team.teamName} Logo">`
+                       : '';
+            tr.innerHTML = `
+              <td>${pos}</td>
+              <td class="team-cell">${logo}<span>${team.teamName}</span></td>
+              <td>${team.matches}</td>
+              <td>${team.won}</td>
+              <td>${team.draw}</td>
+              <td>${team.lost}</td>
+              <td>${team.goalDiff}</td>
+              <td>${team.points}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        })
+        .catch(err=>{
+          console.error(err);
+          loader.innerHTML = '❌ Daten konnten nicht geladen werden.';
+        });
+    }
+    // ---- 5️⃣ Event handler ----------
+    function refresh(){
+      const season = seasonSelect.value;
+      const league  = leagueSelect.value;
+      loadTable(season, league);
+      loadMatchday(season, league);
+    }
+    leagueSelect.addEventListener('change', refresh);
+    seasonSelect.addEventListener('change', refresh);
+    refreshBtn.addEventListener('click', ()=>{
+      refreshBtn.classList.add('loading');
+      refresh();
+      setTimeout(()=>refreshBtn.classList.remove('loading'), 500);
+    });
+    // ---- 6️⃣ Initial load ----------
+    refresh();
+  </script>
 </body>
 </html>
