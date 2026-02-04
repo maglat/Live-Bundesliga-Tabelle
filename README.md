@@ -1,18 +1,33 @@
 # Live-Bundesliga‑Tabelle
 
-Simple HTML page that shows the live Bundesliga table via OpenLigaDB API.
+Ein einfaches HTML‑Projekt, das dynamisch die aktuelle Bundesliga‑Tabelle per **OpenLigaDB**‑API lädt.
 
 ## Features
 
-- Dynamically loads the current Bundesliga table
-- Selectable leagues (1. & 2. Bundesliga, 3. Liga)
-- Selectable seasons
-- Shows current matchday
-- Color-coded table positions (Champions League, Europa League, relegation, etc.)
-- Club logos
-- Smooth animations
+### v1.4 (neueste Version, mit API-Fix)
+- **Hover‑Animationen** für Tabellenzeilen: sanftes Anheben mit Schatten beim Hovern
+- **Buy Me a Coffee** Button: stylischer Button in der oberen rechten Ecke für Spenden
+- **Verbesserte Transitions**: sanftere Animationen mit cubic-bezier easing
+- **API-Fix**: Angepasst an neue OpenLigaDB API-Struktur (`rank`, `goals`, `goalDiff`)
 
-## Usage
+### v1.3
+- **Saison‑Dropdown** – wähle die gewünschte Saison, aktuelle Saison ist vorausgewählt.
+- **Farbliche Highlights** für Champions‑League, Europa‑League, Relegations‑Play‑off und Abstiegsplätze.
+- **Dezente Zeilenlinien** anstelle von Zebra‑Striping.
+- **Automatischer Seitentitel** passt sich der gewählten Saison an.
 
-1. Download `index.html`
-2. Open in your browser
+### v1.2
+- **Aktueller Spieltag** wird angezeigt (z. B. "Spieltag 5 / 34").
+- **Vereins‑Logos** werden neben dem Mannschaftsnamen dargestellt.
+- **Legende** erklärt die farblichen Markierungen.
+- **Animationen** beim Laden der Zeilen (Fade‑In + Slide‑Down).
+
+## Nutzung
+
+1. Repository klonen oder `index.html` herunterladen.
+2. Im Browser öffnen – die Tabelle wird beim Laden automatisch angezeigt.
+3. Im Dropdown oben kannst du **Liga** und **Saison** auswählen; die Tabelle aktualisiert sich sofort.
+
+## Hinweis zur Saison‑Logik
+
+Die neue Saison startet im Juli. Das Skript ermittelt automatisch das aktuelle Saison‑Startjahr. Für frühere Saisons wähle sie einfach im Dropdown.
