@@ -3,97 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1. Bundesliga-Tabelle</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>1. Bundesliga‑Tabelle</title>
+    <meta name="description" content="Aktuelle Bundesliga‑Tabelle mit Platzierungen, Siegen, Unentschieden, Niederlagen, Toren und Punkten.">
+    <style>
+        *{box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;padding:0;background:#f5f5f5;color:#333}header{background:#d00;color:#fff;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}header h1{margin:0;font-size:1.5rem}select{font-size:1rem;padding:.5rem;border:none;border-radius:4px;background:#fff;color:#333;cursor:pointer}#buy-coffee{background:#ffdd00;color:#000;font-weight:bold;border:none;padding:.5rem 1rem;border-radius:20px;cursor:pointer;font-size:.9rem;transition:transform .2s ease,box-shadow .2s ease;display:inline-flex;align-items:center;gap:.3rem;box-shadow:0 2px 4px rgba(0,0,0,.1)}#buy-coffee:hover{transform:scale(1.05);box-shadow:0 4px 8px rgba(0,0,0,.2)}#matchday{display:block;margin:1rem 0;font-size:1.1rem;font-weight:500;min-height:1.6rem}main{max-width:900px;margin:2rem auto;padding:0 1rem}#table-container{background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.1);overflow:hidden}#loading-indicator{display:block;padding:3rem;text-align:center;color:#666;font-size:1.1rem}#loading-indicator::after{content:"";display:block;width:40px;height:40px;border:3px solid #ddd;border-top-color:#d00;border-radius:50%;margin:1rem auto;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}#error-message{background:#fee;color:#c00;padding:1rem;border-radius:8px;margin:1rem 0;display:none}#error-message button{background:#c00;color:#fff;border:none;padding:.5rem 1rem;border-radius:4px;cursor:pointer;margin-top:.5rem}table{width:100%;border-collapse:collapse;font-size:.95rem}th,td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid #eee}th{background:#f8f8f8;font-weight:600;color:#555;text-transform:uppercase;font-size:.85rem;letter-spacing:.5px}#team-logo{height:18px;width:auto;vertical-align:middle;margin-right:.5rem;border-radius:2px}tr{transition:transform .2s cubic-bezier(.4,0,.2,1),box-shadow .2s cubic-bezier(.4,0,.2,1)}tr:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.12);z-index:1;position:relative}tr.cl-champs{background:linear-gradient(90deg,rgba(0,100,200,.1) 0%,rgba(0,100,200,.05) 100%)}tr.cl-champs td:first-child{font-weight:bold;color:#0064c8}tr.cl-europa{background:linear-gradient(90deg,rgba(100,150,200,.1) 0%,rgba(100,150,200,.05) 100%)}tr.cl-europa td:first-child{font-weight:bold;color:#6496c8}tr.cl-relegation{background:linear-gradient(90deg,rgba(200,150,0,.1) 0%,rgba(200,150,0,.05) 100%)}tr.cl-relegation td:first-child{font-weight:bold;color:#c89600}tr.cl-descend{background:linear-gradient(90deg,rgba(200,50,50,.1) 0%,rgba(200,50,50,.05) 100%)}tr.cl-descend td:first-child{font-weight:bold;color:#c83232}#legend{margin-top:2rem;padding:1.5rem;background:#fafafa;border-radius:8px;font-size:.9rem;display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center}#legend h3{margin:0 0 .5rem 0;font-size:.95rem;color:#555;width:100%;text-align:center}#legend-item{display:flex;align-items:center;gap:.4rem}#legend-color{width:18px;height:18px;border-radius:3px}@media(max-width:600px){header{padding:1rem}header h1{font-size:1.2rem}select{font-size:.9rem;padding:.4rem}table{font-size:.85rem}th,td{padding:.5rem .6rem}#team-logo{height:16px}#legend{gap:1rem;font-size:.85rem}}@media(max-width:400px){table{font-size:.8rem}#legend{flex-direction:column;align-items:center}}</style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <h1>1. Bundesliga-Tabelle</h1>
-            
-            <!-- Controls -->
-            <div class="controls">
-                <div class="control-group">
-                    <label for="league-select">Liga:</label>
-                    <select id="league-select">
-                        <option value="bl1">1. Bundesliga</option>
-                        <option value="bl2">2. Bundesliga</option>
-                        <option value="bl3">3. Liga</option>
-                    </select>
-                </div>
-                
-                <div class="control-group">
-                    <label for="season-select">Saison:</label>
-                    <select id="season-select"></select>
-                </div>
-                
-                <button id="dark-mode-toggle" class="btn-icon" title="Dark Mode umschalten">
-                    <span class="icon">🌙</span>
-                </button>
-            </div>
-        </div>
+    <header>
+        <h1>1. Bundesliga‑Tabelle</h1>
+        <select id="league-select">
+            <option value="bl1">1. Bundesliga</option>
+            <option value="bl2">2. Bundesliga</option>
+            <option value="bl3">3. Liga</option>
+        </select>
+        <select id="season-select"></select>
+        <button id="buy-coffee" onclick="window.open('https://buymeacoffee.com/maglat','_blank')">☕ Buy me a coffee</button>
     </header>
-
-    <main class="main-content">
-        <!-- Status Bar -->
-        <div class="status-bar">
-            <span id="current-matchday" class="status-item">Aktueller Spieltag: - / 34</span>
-            <span id="last-updated" class="status-item"></span>
-        </div>
-
-        <!-- Loading Indicator -->
-        <div id="loading" class="loading-container">
-            <div class="spinner"></div>
-            <p>Lade Daten…</p>
-        </div>
-
-        <!-- Error Message -->
-        <div id="error-message" class="error-container hidden">
-            <span class="error-icon">⚠️</span>
-            <p id="error-text"></p>
-            <button id="retry-btn" class="btn btn-primary">Erneut versuchen</button>
-        </div>
-
-        <!-- Table Container -->
-        <div id="table-container" class="table-container hidden">
-            <table class="league-table" id="league-table">
+    
+    <main>
+        <span id="matchday">Aktueller Spieltag: - / 34</span>
+        
+        <div id="table-container">
+            <div id="loading-indicator">Lade Daten …</div>
+            <div id="error-message"></div>
+            <table>
                 <thead>
                     <tr>
-                        <th class="text-left">#</th>
-                        <th class="text-left">Mannschaft</th>
-                        <th>Sp</th>
+                        <th>#</th>
+                        <th>Mannschaft</th>
+                        <th>Sp.</th>
                         <th>SU</th>
                         <th>V+/-</th>
-                        <th>Pkt</th>
+                        <th>Pkt.</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
             </table>
         </div>
+        
+        <div id="legend">
+            <h3>Legende:</h3>
+            <div id="legend-item">
+                <div id="legend-color" style="background:rgba(0,100,200,.2)"></div>
+                <span>Champions‑League (Plätze 1‑4)</span>
+            </div>
+            <div id="legend-item">
+                <div id="legend-color" style="background:rgba(100,150,200,.2)"></div>
+                <span>Europa‑League (Plätze 5‑6)</span>
+            </div>
+            <div id="legend-item">
+                <div id="legend-color" style="background:rgba(200,150,0,.2)"></div>
+                <span>Relegations‑Play‑off (Platz 16)</span>
+            </div>
+            <div id="legend-item">
+                <div id="legend-color" style="background:rgba(200,50,50,.2)"></div>
+                <span>Direkter Abstieg (Plätze 17‑18)</span>
+            </div>
+        </div>
     </main>
 
-    <!-- Legend -->
-    <aside class="legend">
-        <h3>Legende:</h3>
-        <ul class="legend-list">
-            <li><span class="legend-color cl"></span> Champions-League (Plätze 1-4)</li>
-            <li><span class="legend-color el"></span> Europa-League (Plätze 5-6)</li>
-            <li><span class="legend-color rel"></span> Relegations-Play-off (Platz 16)</li>
-            <li><span class="legend-color ab"></span> Direkter Abstieg (Plätze 17-18)</li>
-        </ul>
-    </aside>
+    <script>
+    (function() {
+        const API_BASE = "https://api.openligadb.de";
+        const leagueSelect = document.getElementById("league-select");
+        const seasonSelect = document.getElementById("season-select");
+        const matchdaySpan = document.getElementById("matchday");
+        const tableBody = document.getElementById("table-body");
+        const loadingIndicator = document.getElementById("loading-indicator");
+        const errorMessage = document.getElementById("error-message");
+        const pageTitle = document.title;
 
-    <!-- Footer -->
-    <footer class="footer">
-        <a href="https://www.buymeacoffee.com/" target="_blank" class="btn-coffee">
-            ☕ Buy me a coffee
-        </a>
-        <p class="footer-note">Datenquelle: OpenLigaDB API</p>
-    </footer>
+        const currentSeasonStartYear = new Date().getMonth() >= 6 ? new Date().getFullYear() : new Date().getFullYear() - 1;
+        
+        function getSeasonKey(startYear) {
+            return `${startYear}/${startYear + 1}`;
+        }
+        
+        function getStartYearFromSeasonKey(seasonKey) {
+            const parts = seasonKey.split("/");
+            return parseInt(parts[0], 10);
+        }
 
-    <!-- Scripts -->
-    <script src="js/config.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/app.js"></script>
+        function populateSeasons() {
+            seasonSelect.innerHTML = "";
+            const endYear = currentSeasonStartYear + 1;
+            for (let year = 2024; year <= currentSeasonStartYear; year++) {
+                const option = document.createElement("option");
+                option.value = year;
+                option.textContent = getSeasonKey(year);
+                seasonSelect.appendChild(option);
+            }
+            seasonSelect.value = currentSeasonStartYear;
+        }
+
+        async function getCurrentMatchday(league, seasonStartYear) {
+            try {
+                const response = await fetch(`${API_BASE}/getcurrentgroup/${league}/${seasonStartYear}`);
+                if (!response.ok) throw new Error("Failed to fetch current matchday");
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching matchday:", error);
+                return null;
+            }
+        }
+
+        async function getStandings(league, seasonStartYear) {
+            try {
+                const response = await fetch(`${API_BASE}/getbltable/${league}/${seasonStartYear}`);
+                if (!response.ok) throw new Error("Failed to fetch standings");
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching standings:", error);
+                return null;
+            }
+        }
+
+        async function getTeamLogo(teamName) {
+            const cleanName = teamName.replace(/ö/g,"o").replace(/ä/g,"a").replace(/ü/g,"u").replace(/ß/g,"ss").replace(/[^a-zA-Z0-9]/g," ").trim().replace(/\s+/g,"-").toLowerCase();
+            try {
+                const response = await fetch(`${API_BASE}/getteam/${teamName}`);
+                if (!response.ok) throw new Error("Failed to fetch team logo");
+                const teams = await response.json();
+                if (teams && teams.length > 0 && teams[0].teamIconUrl) {
+                    return teams[0].teamIconUrl;
+                }
+            } catch (error) {
+                // Silent error - will use default
+            }
+            return null;
+        }
+
+        function showError(message, showRetry = true) {
+            loadingIndicator.style.display = "none";
+            tableBody.innerHTML = "";
+            errorMessage.textContent = message;
+            errorMessage.style.display = "block";
+            if (showRetry) {
+                errorMessage.innerHTML += '<button onclick="location.reload()">Erneut versuchen</button>';
+            }
+        }
+
+        function getClassForPosition(platz, league) {
+            if (league === "bl1") {
+                if (platz <= 4) return "cl-champs";
+                if (platz === 5 || platz === 6) return "cl-europa";
+                if (platz === 16) return "cl-relegation";
+                if (platz >= 17) return "cl-descend";
+            }
+            if (league === "bl2") {
+                if (platz === 2 || platz === 3) return "cl-europa";
+                if (platz === 16) return "cl-relegation";
+                if (platz >= 17) return "cl-descend";
+            }
+            return "";
+        }
+
+        async function loadTable() {
+            loadingIndicator.style.display = "block";
+            errorMessage.style.display = "none";
+            tableBody.innerHTML = "";
+            
+            const league = leagueSelect.value;
+            const seasonStartYear = seasonSelect.value;
+            const seasonKey = getSeasonKey(seasonStartYear);
+            
+            pageTitle.textContent = `${leagueSelect.options[leagueSelect.selectedIndex].text} ${seasonKey}`;
+
+            try {
+                const [matchdayData, tableData] = await Promise.all([
+                    getCurrentMatchday(league, seasonStartYear),
+                    getStandings(league, seasonStartYear)
+                ]);
+                
+                loadingIndicator.style.display = "none";
+                
+                if (matchdayData && matchdayData.groupOrderID) {
+                    matchdaySpan.textContent = `Aktueller Spieltag: ${matchdayData.groupOrderID || "-"} / 34`;
+                } else {
+                    matchdaySpan.textContent = "Aktueller Spieltag: - / 34";
+                }
+                
+                if (!tableData || tableData.length === 0) {
+                    showError("Keine Tabellendaten gefunden.");
+                    return;
+                }
+                
+                for (let i = 0; i < tableData.length; i++) {
+                    const team = tableData[i];
+                    const row = document.createElement("tr");
+                    const positionClass = getClassForPosition(team.place, league);
+                    if (positionClass) row.classList.add(positionClass);
+                    
+                    const logoUrl = await getTeamLogo(team.teamName);
+                    
+                    row.innerHTML = `
+                        <td>${team.place}</td>
+                        <td>
+                            ${logoUrl ? `<img id="team-logo" src="${logoUrl}" alt="${team.teamName} Logo">` : ""}
+                            ${team.teamName}
+                        </td>
+                        <td>${team.matches}</td>
+                        <td>${team.won || 0} / ${team.draw || 0} / ${team.lost || 0}</td>
+                        <td>${team.goals}:${team.opponentGoals} (${(team.goalDiff ?? 0) >= 0 ? "+" : ""}${team.goalDiff ?? 0})</td>
+                        <td><strong>${team.points}</strong></td>
+                    `;
+                    row.style.animation = `fadeIn .3s ease ${i * .03}s backwards`;
+                    tableBody.appendChild(row);
+                }
+                
+            } catch (error) {
+                console.error("Error loading table:", error);
+                showError("Fehler beim Laden der Daten. Bitte versuche es erneut.");
+            }
+        }
+
+        function init() {
+            populateSeasons();
+            loadTable();
+            
+            leagueSelect.addEventListener("change", loadTable);
+            seasonSelect.addEventListener("change", loadTable);
+        }
+        
+        init();
+    })();
+    </script>
 </body>
 </html>
