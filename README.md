@@ -1,105 +1,58 @@
 # Live-Bundesliga-Tabelle
 
-Ein einfaches, modernes HTML-Projekt, das dynamisch die aktuelle Bundesliga-Tabelle per **OpenLigaDB**-API lädt.
+Ein einfaches HTML-Projekt, das dynamisch die aktuelle Bundesliga-Tabelle per **OpenLigaDB**-API lädt.
 
-## 🚀 Features (v2.0)
+## Features
 
-### Core Features
-- Dynamisches Laden der Tabelle per OpenLigaDB API
-- Liga-Auswahl (1. & 2. Bundesliga, 3. Liga)
-- Saison-Auswahl mit automatischem Startjahr
-- Farbliche Highlights für Platzierungen
-- Vereins-Logos mit Lazy Loading
-- Aktuelle Spieltag-Anzeige
+### v2.0 (neueste Version)
+- **Modulare Struktur** – CSS und JavaScript sind jetzt in separaten Dateien organisiert
+- **Dark Mode** – Automatische Anpassung an Systemeinstellungen (Hell/Dunkel)
+- **Verbesserte Fehlerbehandlung** – Toast-Benachrichtigungen bei API-Fehlern
+- **Smart Caching** – Daten werden für 5 Minuten gecached für bessere Performance
+- **Responsive Design** – Optimiert für Desktop, Tablet und Mobile
+- **Hover-Animationen** – Sanftes Anheben mit Schatten beim Hovern
+- **Buy Me a Coffee Button** – Stylischer Button in der oberen rechten Ecke
 
-### UI/UX Verbesserungen
-- **Dark Mode** 🌙 – Automatisch basierend auf System-Einstellung
-- **Responsive Design** 📱 – Optimiert für Desktop, Tablet & Mobile
-- **Moderne Animationen** – Sanfte Fade-In & Hover-Effekte
-- **Toast-Benachrichtigungen** – Für Erfolge und Fehler
-- **Skeleton Loading** – Bessere Lade-Erfahrung
-- **Lokale Datenspeicherung** – Caching für schnellere Ladezeiten
+### Vorherige Versionen
+- **Saison‑Dropdown** – Wähle die gewünschte Saison, aktuelle Saison ist vorausgewählt
+- **Farbliche Highlights** – Für Champions‑League, Europa‑League, Relegations‑Play‑off und Abstiegsplätze
+- **Vereins‑Logos** – Werden neben dem Namen dargestellt
+- **Legende** – Erklärt die farblichen Markierungen
+- **Animationen** – Fade‑In + Slide‑Down beim Laden
 
-### Code-Qualität
-- Modular aufgebaute Struktur (CSS/JS getrennt)
-- Fehlerbehandlung mit try-catch
-- Konfigurierbare Einstellungen
-- Saubere Code-Dokumentation
+## Installation & Nutzung
 
-## 📁 Projektstruktur
+### Lokal nutzen
 
-```
-Live-Bundesliga-Tabelle/
-├── index.html          # Hauptseite
-├── css/
-│   └── style.css       # Styles & Dark Mode
-├── js/
-│   ├── config.js       # Konfiguration & Konstanten
-│   ├── api.js          # API-Service mit Caching
-│   └── app.js          # Main Application Logic
-├── cover.png           # Cover-Bild
-├── .gitignore          # Git Ignorierungen
-└── README.md           # Diese Datei
-```
-
-## 🛠️ Installation & Nutzung
-
-### Lokal ausführen
-1. Repository klonen:
+1. Repository klonen oder Dateien herunterladen:
    ```bash
    git clone https://github.com/maglat/Live-Bundesliga-Tabelle.git
    ```
-2. Oder `index.html` direkt herunterladen
-3. Im Browser öffnen – die Tabelle wird automatisch geladen
 
-### Online nutzen
-Öffne die GitHub Pages URL:
-```
-https://maglat.github.io/Live-Bundesliga-Tabelle/
-```
-
-## ⚙️ Konfiguration
-
-Bearbeite `js/config.js` um Einstellungen anzupassen:
-
-```javascript
-const CONFIG = {
-  API_BASE_URL: 'https://api.openligadb.de',
-  CACHE_DURATION: 5 * 60 * 1000,  // 5 Minuten
-  DEFAULT_LEAGUE: 'bl1',
-  SEASON_START_MONTH: 7,          // Juli
-  ...
-};
-```
-
-## 🔧 Entwicklung
-
-### Projekt entwickeln
-1. Änderungen an Dateien vornehmen
-2. Änderungen testen
-3. Commit & Push:
+2. Im Browser öffnen:
    ```bash
-   git add .
-   git commit -m "Deine Nachricht"
-   git push origin main
+   # Direkt im Browser: Öffne index.html
+   # Oder mit einem lokalen Server:
+   cd Live-Bundesliga-Tabelle
+   npx serve     # oder python -m http.server
    ```
 
-### Neue Features planen
-- [ ] Live-Ticker für aktuelle Spiele
-- [ ] Formkurven (letzte 5 Spiele)
-- [ ] Torjäger-Bestenliste
-- [ ] Vergleich zweier Vereine
-- [ ] Offline-Modus
+## Technologien
 
-## 📝 API
+- **HTML5** – Semantische Struktur
+- **CSS3** – Modernes Styling mit Custom Properties
+- **Vanilla JavaScript** – Keine Frameworks, reine Web-Technologien
+- **OpenLigaDB API** – Kostenlose Fußball-Daten
 
-Danke an [OpenLigaDB](https://www.openligadb.de/) für die Bundesliga-Daten!
+## Danksagung
 
-## 📄 Lizenz
+- [OpenLigaDB](https://www.openligadb.de/) – Für die fantastische Bundesliga-Daten-API
+- [Bundesvereinigung Ligapräsentation e.V.](https://www.bundesliga.de/) – Offizielle Quelle
 
-MIT License – frei nutzbar und modifizierbar.
+## Autor
 
-## 💖 Support
+**maglat** – [GitHub Profil](https://github.com/maglat)
 
-Hat dir das Projekt gefallen?  
-<a href="https://www.buymeacoffee.com/" target="_blank">☕ Buy me a coffee</a>
+---
+
+💙 Made with passion for German football
