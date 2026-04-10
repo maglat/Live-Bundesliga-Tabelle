@@ -1,44 +1,54 @@
-# Live-Bundesliga‑Tabelle
+# ⚽ Live Bundesliga Tabelle
 
-Eine einfache HTML‑Seite, die dynamisch die aktuelle Bundesliga‑Tabelle per **OpenLigaDB**‑API lädt.
+Eine moderne, live aktualisierte Bundesliga-Tabelle mit schönen Visualisierungen und Automatisierungen.
 
-## Features
+## 🚀 Live ansehen
 
-### v1.4.1 (neueste Version)
-- **Dark Mode** – automatische Anpassung an die System-Einstellung
-- **Verbesserte Animationen** – sanftere Hover-Effekte und smoother Shadow-Transition
-- **CSS Variablen** – einfacher zu pflegender Code
-- **Refresh-Button** – manuelles Aktualisieren der Tabelle
-- **Loading-Spinner** – bessere Lade-Visualisierung
+**https://maglat.github.io/Live-Bundesliga-Tabelle/**
 
-### v1.4 (vorherige Version)
-- **Hover‑Animationen** für Tabellenzeilen: sanftes Anheben mit Schatten beim Hovern
-- **Buy Me a Coffee** Button: stylischer Button in der oberen rechten Ecke für Spenden
+## ✨ Features
 
-### v1.3
-- **Saison‑Dropdown** – wähle die gewünschte Saison, aktuelle Saison ist vorausgewählt
-- **Farbliche Highlights** für Champions‑League, Europa‑League, Relegations‑Play‑off und Abstiegsplätze
-- **Dezente Zeilenlinien** anstelle von Zebra‑Striping
-- **Automatischer Seitentitel** passt sich der gewählten Saison an
+- **Live-Daten**: Automatische Updates während Spieltagen (alle 30 Minuten)
+- **Form-Analyse**: Die letzten 5 Spiele als farbige Punkte (🟢 Sieg, 🟡 Unentschieden, 🔴 Niederlage)
+- **Position-Änderungen**: ⬆️ Gestiegen / ⬇️ Gefallen / ─ Unverändert
+- **Qualifikationszonen**:
+  - 🟢 Champions League (Platz 1-4)
+  - 🟡 Europa League (Platz 5)
+  - 🟠 Conference League (Platz 6)
+  - 🟣 Relegation (Platz 16)
+  - 🔴 Abstieg (Platz 17-18)
+- **Saison-Wähler**: Wechsle zwischen aktuellen und vergangenen Spielzeiten
+- **Responsive Design**: Funktioniert auf allen Geräten
+- **Auto-Update Toggle**: Ein/Aus Schalter für automatische Updates
 
-### v1.2
-- **Aktueller Spieltag** wird angezeigt (z. B. "Spieltag 5 / 34")
-- **Vereins‑Logos** werden neben dem Mannschaftsnamen dargestellt
-- **Legende** erklärt die farblichen Markierungen
-- **Animationen** beim Laden der Zeilen (Fade‑In + Slide‑Down)
+## 🛠️ Technologie
 
-## Nutzung
+- HTML5 / CSS3 / JavaScript (ES6+)
+- Football-Data.org API (kostenlose Liga)
+- Google Fonts (Inter)
+- Modernes CSS (Flexbox, Grid, CSS Variables)
 
-### Online nutzen
-Die aktuelle Version ist unter folgender URL verfügbar:  
-🔗 https://maglat.github.io/Live-Bundesliga-Tabelle/
+## 📋 Einrichtung
 
-### Lokal nutzen
-1. Repository klonen oder `index.html` herunterladen
-2. Im Browser öffnen – die Tabelle wird beim Laden automatisch angezeigt
-3. Im Dropdown oben kannst du **Liga** und **Saison** auswählen; die Tabelle aktualisiert sich sofort
-4. Mit dem **Refresh-Button** kannst du die Daten manuell neu laden
+1. Hole dir einen kostenlosen API-Key unter [football-data.org](https://www.football-data.org/)
+2. Ersetze `YOUR_API_KEY_HERE` in Zeile ~135 von `index.html` mit deinem Key
+3. Öffne die Datei im Browser oder deploye sie
 
-## Hinweis zur Saison‑Logik
+## 🎨 Screenshots
 
-Die neue Saison startet im Juli. Das Skript ermittelt automatisch das aktuelle Saison‑Startjahr. Für frühere Saisons wähle sie einfach im Dropdown.
+Die Tabelle zeigt:
+- Platzierung
+- Teamnamen
+- Gespielte Spiele (P)
+- Form (letzte 5 Spiele)
+- Tordifferenz
+- Punkte
+- Position-Änderung
+
+## 📝 License
+
+Open Source - frei verwendbar.
+
+---
+
+Gemacht mit ❤️ und Liebe zum Fußball ⚽🇩🇪
