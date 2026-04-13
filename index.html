@@ -640,24 +640,46 @@ let isAutoRefreshActive = false;
           </div>
         </div>`;
         
-        // Get events from match - check both possible field names from OpenLigaDB API
-        const events = match.matchEvents || [];
+        // Try multiple event field names that OpenLigaDB might use
+        const events = match.matchEvents || match.events || match.matchDetails?.events || match.events || match.Goals || [];
         
-        // OpenLigaDB uses matchEventType for event types: 705001=goal, 705004=yellow, 705005=red
-        const goals = events.filter(e => e.matchEventType === 705001);
-        const cards = events.filter(e => e.matchEventType === 705004 || e.matchEventType === 705005);
+        console.log('=== DEBUG MATCH EVENTS ===');
+        console.log('Raw match object:', match);
+        console.log('Events found:', events);
+        console.log('Event keys in first event:', events.length > 0 ? Object.keys(events[0]) : 'none');
         
-        console.log('Match events debug:', { events, goals, cards }); // Debug line
+        // Try different ways to identify goals (705001) and cards
+        const goals = events.filter(e => 
+          e.eventID === 705001 || 
+          e.eventTypeID === 705001 || 
+          e.matchEventType === 705001 ||
+          e.EventType === 705001 ||
+          e.EventTypeID === 705001
+        );
+        
+        const cards = events.filter(e => 
+          [705004, 705005].includes(e.eventID) ||
+          [705004, 705005].includes(e.eventTypeID) ||
+          [705004, 705005].includes(e.matchEventType) ||
+          [705004, 705005].includes(e.EventType) ||
+          [705004, 705005].includes(e.EventTypeID)
+        );
+        
+        console.log('Goals found:', goals, 'Count:', goals.length);
+        console.log('Cards found:', cards, 'Count:', cards.length);
         
         // Goals section
         html += `<h3 class="section-title">⚽ Tore</h3>`;
         html += `<div class="events-list">`;
         if(goals.length > 0) {
           goals.forEach(goal => {
-            const minute = goal.minute || '?';
-            const player = goal.playerName || 'Unbekannt';
-            const forHomeTeam = goal.pointsTeam1 > 0;
-            const teamName = forHomeTeam ? homeTeam.teamName : awayTeam.teamName;
+            // Try different minute field names
+            const minute = goal.minute || goal.eventMinute || goal.EventMinute || '?';
+            // Try different player name field names
+            const player = goal.name || goal.playerName || goal.PlayerName || goal playerName || goal.eventName || goal.EventName || 'Unbekannt';
+            // Try different team point fields
+            const forHome = (goal.pointsTeam1 > 0) || (goal.resultTeam1 !== null) || (goal.Team1 === true);
+            const teamName = forHome ? homeTeam.teamName : awayTeam.teamName;
             html += `
               <div class="event-row goal">
                 <span class="event-time">${minute}'</span>
@@ -667,8 +689,35 @@ let isAutoRefreshActive = false;
               </div>`;
           });
         } else {
-          html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Tore</span><span class="match-info-value">Keine Tore</span></div>';
+          html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Tore</span><span class="match-info-value">Keine Tore</span><br><small>' + JSON.stringify(events.slice(0,2)) + '</small></div>';
         }
+        html += `</div>`;
+        
+        // Cards section  
+        html += `<h3 class="section-title"> 🟨 Karten</h3>`;
+        html += `<div class="events-list">`;
+        if(cards.length > 0) {
+          cards.forEach(card => {
+            const minute = card.minute || card.eventMinute || card.EventMinute || '?';
+            const player = card.name || card.playerName || card.PlayerName || card.playerName || card.eventName || card.EventName || 'Unbekannt';
+            // Check if red card (705005) or yellow (705004)
+            const isRed = card.eventID === 705005 || card.eventTypeID === 705005 || card.matchEventType === 705005 || card.EventType === 705005 || card.EventTypeID === 705005;
+            const icon = isRed ? '🟥' : '🟨';
+            const className = isRed ? 'rcard' : 'ycard';
+            html += `
+              <div class="event-row ${className}">
+                <span class="event-time">${minute}'</span>
+                <span class="event-icon">${icon}</span>
+                <span class="event-player">${player}</span>
+              </div>`;
+          });
+        } else {
+          html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Karten</span><span class="match-info-value">Keine Karten</span></div>';
+        }
+        html += `</div>`;
+        
+        modalBody.innerHTML = html;
+    }
         html += `</div>`;
         
         // Cards section  
