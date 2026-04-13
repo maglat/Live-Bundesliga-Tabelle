@@ -610,10 +610,24 @@ let isAutoRefreshActive = false;
       modalBody.innerHTML = loader;
       modal.classList.add('active');
       
-      // Fetch goals and cards from match details endpoint
+      // Store match data in global for details fetch
+      window.currentMatchData = {
+        matchID: matchID,
+        season: season,
+        league: league,
+        matchday: document.getElementById('matchday-select').value
+      };
+      
+      // Try to fetch more detailed info - but handle CORS gracefully
       fetch(`https://api.openligadb.de/getblmatchdetails/${matchID}`)
         .then(res => res.json())
+        .catch(() => null)
         .then(data => {
+          if(!data) {
+            modalBody.innerHTML = '<div class="empty-state">⚠️ Spieldetails verfügbar, aber keine zusätzlichen Events (Tore/Karten) von der API erreichbar (CORS).<br><br>Klicke einen anderen Spieltag oder lade die Seite neu.</div>';
+            return;
+          }
+          
           let html = '';
           
           // Match info
@@ -703,7 +717,7 @@ let isAutoRefreshActive = false;
         })
         .catch(err => {
           console.error('Match detail error:', err);
-          modalBody.innerHTML = '<div class="empty-state">❌ Details konnten nicht geladen werden. <br><br><small>Fehler: ' + err + '</small></div>';
+          modalBody.innerHTML = '<div class="empty-state">❌ Details konnten nicht geladen werden. <br><br><small>' + err + '</small></div>';
         });
     }
     
