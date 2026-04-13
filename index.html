@@ -253,6 +253,61 @@
     .slide-down{animation:slideDown .5s ease-out;}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
+    /* Modal */
+    .modal-overlay{
+      position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,.7); display:none; justify-content:center;
+      align-items:center; z-index:9999; padding:1rem;
+      animation:fadeIn .2s ease;
+    }
+    .modal-overlay.active{display:flex;}
+    .modal-content{
+      background:var(--card-bg); border-radius:12px; max-width:600px; width:100%;
+      max-height:90vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,.4);
+      animation:slideDown .2s ease;
+    }
+    .modal-header{
+      background:var(--highlight); color:#fff; padding:1.2rem 1.5rem;
+      border-radius:12px 12px 0 0; display:flex; justify-content:space-between;
+      align-items:center; font-weight:600; font-size:1.1rem;
+    }
+    .modal-close{
+      background:rgba(255,255,255,.2); border:none; color:#fff;
+      width:32px; height:32px; border-radius:50%; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem; transition:background .2s;
+    }
+    .modal-close:hover{background:rgba(255,255,255,.3);}
+    .modal-body{padding:1.5rem;}
+    .match-info-row{
+      display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;
+      padding-bottom:1.5rem; border-bottom:1px solid var(--border);
+    }
+    .match-info-item{
+      flex:1; min-width:120px; display:flex; flex-direction:column;
+    }
+    .match-info-label{font-size:.78rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:.2rem;}
+    .match-info-value{font-size:.95rem; font-weight:500; color:var(--text-primary);}
+    .section-title{
+      font-size:.85rem; font-weight:600; text-transform:uppercase; color:var(--text-secondary);
+      margin:1.2rem 0 .6rem; letter-spacing:.5px;
+    }
+    .events-list{display:flex; flex-direction:column; gap:.4rem;}
+    .event-row{
+      display:flex; align-items:center; gap:.6rem; padding:.5rem;
+      background:rgba(44,62,80,.04); border-radius:6px; font-size:.92rem;
+    }
+    .event-row.goal{border-left:3px solid #2c5530;}
+    .event-row.ycard{border-left:3px solid #c98d00;}
+    .event-row.rcard{border-left:3px solid #b00;}
+    .event-row.sub{border-left:3px solid #0066cc;}
+    .event-time{min-width:35px; font-weight:600; color:var(--highlight); font-size:.85rem;}
+    .event-icon{font-size:1.1rem; flex-shrink:0;}
+    .event-desc{flex:1; min-width:0;}
+    .event-player{font-weight:500;}
+    .event-detail{color:var(--text-secondary); font-size:.82rem;}
+    .sub-detail{display:flex; gap:.4rem; align-items:center;}
+    .sub-detail span:first-child{color:var(--text-secondary);}
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -352,6 +407,19 @@
 
       <div id="matches-container">
         <p class="loader" id="matches-loader"><span class="loader-spinner"></span> Lade Partien …</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Match Details Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span id="modal-title">Spieldetails</span>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <p class="loader"><span class="loader-spinner"></span> Lade Details …</p>
       </div>
     </div>
   </div>
@@ -482,6 +550,7 @@ let isAutoRefreshActive = false;
             const homeLogo = match.team1?.teamIconUrl || '';
             const awayLogo = match.team2?.teamIconUrl || '';
             const isFinished = match.matchIsFinished;
+            const matchID = match.matchID;
             const startTime = match.matchDateTime ? new Date(match.matchDateTime).toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'}) : '-';
             
             // Get final score from matchResults
@@ -491,6 +560,8 @@ let isAutoRefreshActive = false;
             
             const card = document.createElement('div');
             card.className = 'match-card fade-in';
+            card.style.cursor = 'pointer';
+            card.onclick = () => showMatchDetails(matchID);
             
             let scoreHtml = '';
             let statusHtml = '';
@@ -521,6 +592,118 @@ let isAutoRefreshActive = false;
           container.innerHTML = '<div class="empty-state">❌ Daten konnten nicht geladen werden.</div>';
         });
     }
+
+    // Load match details
+    function showMatchDetails(matchID) {
+      const modal = document.getElementById('modal');
+      const modalBody = document.getElementById('modal-body');
+      const modalTitle = document.getElementById('modal-title');
+      const loader = '<p class="loader"><span class="loader-spinner"></span> Lade Details …</p>';
+      
+      modalTitle.textContent = 'Spieldetails';
+      modalBody.innerHTML = loader;
+      modal.classList.add('active');
+      
+      // Fetch match details: basic info + events
+      apiUrl(`https://api.openligadb.de/getblmatchdetails/${matchID}`)
+        .then(details => {
+          let html = '';
+          
+          // Match info row
+          const homeName = details.team1?.teamName || '';
+          const awayName = details.team2?.teamName || '';
+          const stadium = details.stadion || 'Unbekannt';
+          const referee = details.schiedsrichter || 'Unbekannt';
+          const halfTime1 = details.halfTimeScore1 || 0;
+          const halfTime2 = details.halfTimeScore2 || 0;
+          const finalResult = details.matchResults?.find(r => r.resultTypeID === 2);
+          const homeGoals = finalResult?.pointsTeam1 ?? 0;
+          const awayGoals = finalResult?.pointsTeam2 ?? 0;
+          
+          html += `
+            <div class="match-info-row">
+              <div class="match-info-item">
+                <span class="match-info-label">Ergebnis</span>
+                <span class="match-info-value">${homeGoals}:${awayGoals}</span>
+              </div>
+              <div class="match-info-item">
+                <span class="match-info-label">Halbzeit</span>
+                <span class="match-info-value">${halfTime1}:${halfTime2}</span>
+              </div>
+              <div class="match-info-item">
+                <span class="match-info-label">Stadion</span>
+                <span class="match-info-value">${stadium}</span>
+              </div>
+              <div class="match-info-item">
+                <span class="match-info-label">Schiedsrichter</span>
+                <span class="match-info-value">${referee}</span>
+              </div>
+            </div>`;
+          
+          // Goals section
+          const goals = details.goals || [];
+          if(goals.length > 0) {
+            html += `<h3 class="section-title">🥅 Tore (${goals.length})</h3>`;
+            html += `<div class="events-list">`;
+            goals.forEach((goal, i) => {
+              const minute = goal.minute || 'Unknown';
+              const scorer = goal.name || 'Unbekannt';
+              const isHome = goal.resultTeam1 !== null;
+              const forTeam = isHome ? homeName : awayName;
+              html += `
+                <div class="event-row goal">
+                  <span class="event-time">${minute}'</span>
+                  <span class="event-icon">⚽</span>
+                  <span class="event-player">${scorer}</span>
+                  <span class="event-detail">für ${forTeam}</span>
+                </div>`;
+            });
+            html += `</div>`;
+          }
+          
+          // Cards section
+          const cards = details.cards || [];
+          if(cards.length > 0) {
+            html += `<h3 class="section-title">🟨 Karten (${cards.length})</h3>`;
+            html += `<div class="events-list">`;
+            cards.forEach((card, i) => {
+              const minute = card.minute || 'Unknown';
+              const player = card.name || 'Unbekannt';
+              const type = card.cardType || 'yellow';
+              const isRed = type === 'red';
+              const icon = isRed ? '🟥' : '🟨';
+              const className = isRed ? 'rcard' : 'ycard';
+              html += `
+                <div class="event-row ${className}">
+                  <span class="event-time">${minute}'</span>
+                  <span class="event-icon">${icon}</span>
+                  <span class="event-player">${player}</span>
+                </div>`;
+            });
+            html += `</div>`;
+          }
+          
+          modalBody.innerHTML = html;
+        })
+        .catch(err => {
+          console.error(err);
+          modalBody.innerHTML = '<div class="empty-state">❌ Details konnten nicht geladen werden.</div>';
+        });
+    }
+    
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+    }
+    
+    // Close on outside click
+    document.getElementById('modal').addEventListener('click', (e) => {
+      if(e.target.id === 'modal') closeModal();
+    });
+    
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') closeModal();
+    });
 
     // Helper fetch
     function apiUrl(url) {
