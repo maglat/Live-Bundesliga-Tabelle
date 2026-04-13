@@ -676,7 +676,7 @@ let isAutoRefreshActive = false;
             // Try different minute field names
             const minute = goal.minute || goal.eventMinute || goal.EventMinute || '?';
             // Try different player name field names
-            const player = goal.name || goal.playerName || goal.PlayerName || goal playerName || goal.eventName || goal.EventName || 'Unbekannt';
+            const player = goal.name || goal.playerName || goal.PlayerName || 'Unbekannt';
             // Try different team point fields
             const forHome = (goal.pointsTeam1 > 0) || (goal.resultTeam1 !== null) || (goal.Team1 === true);
             const teamName = forHome ? homeTeam.teamName : awayTeam.teamName;
@@ -699,7 +699,7 @@ let isAutoRefreshActive = false;
         if(cards.length > 0) {
           cards.forEach(card => {
             const minute = card.minute || card.eventMinute || card.EventMinute || '?';
-            const player = card.name || card.playerName || card.PlayerName || card.playerName || card.eventName || card.EventName || 'Unbekannt';
+            const player = card.name || card.playerName || card.PlayerName || 'Unbekannt';
             // Check if red card (705005) or yellow (705004)
             const isRed = card.eventID === 705005 || card.eventTypeID === 705005 || card.matchEventType === 705005 || card.EventType === 705005 || card.EventTypeID === 705005;
             const icon = isRed ? '🟥' : '🟨';
