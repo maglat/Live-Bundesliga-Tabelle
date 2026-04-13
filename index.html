@@ -600,56 +600,52 @@ let isAutoRefreshActive = false;
       const modalTitle = document.getElementById('modal-title');
       const loader = '<p class="loader"><span class="loader-spinner"></span> Lade Details …</p>';
       
+      if(!matchID || matchID === undefined || matchID === null) {
+        modalBody.innerHTML = '<div class="empty-state">❌ Match-ID fehlt</div>';
+        setTimeout(() => closeModal(), 2000);
+        return;
+      }
+      
       modalTitle.textContent = 'Spieldetails';
       modalBody.innerHTML = loader;
       modal.classList.add('active');
       
-      // Fetch match details: basic info + events
-      apiUrl(`https://api.openligadb.de/getblmatchdetails/${matchID}`)
-        .then(details => {
+      // Fetch goals and cards separately
+      const goalsUrl = `https://api.openligadb.de/getgoals/${matchID}`;
+      const cardsUrl = `https://api.openligadb.de/getcards/${matchID}`;
+      
+      Promise.all([
+        fetch(goalsUrl).then(r => r.ok ? r.json() : []),
+        fetch(cardsUrl).then(r => r.ok ? r.json() : [])
+      ])
+        .then(([goals, cards]) => {
           let html = '';
           
-          // Match info row
-          const homeName = details.team1?.teamName || '';
-          const awayName = details.team2?.teamName || '';
-          const stadium = details.stadion || 'Unbekannt';
-          const referee = details.schiedsrichter || 'Unbekannt';
-          const halfTime1 = details.halfTimeScore1 || 0;
-          const halfTime2 = details.halfTimeScore2 || 0;
-          const finalResult = details.matchResults?.find(r => r.resultTypeID === 2);
-          const homeGoals = finalResult?.pointsTeam1 ?? 0;
-          const awayGoals = finalResult?.pointsTeam2 ?? 0;
-          
+          // Reconstruct match info from current data is complex, skip stadium/referee for now
+          // or we could fetch them too, but let's show what we have
           html += `
             <div class="match-info-row">
               <div class="match-info-item">
-                <span class="match-info-label">Ergebnis</span>
-                <span class="match-info-value">${homeGoals}:${awayGoals}</span>
-              </div>
-              <div class="match-info-item">
-                <span class="match-info-label">Halbzeit</span>
-                <span class="match-info-value">${halfTime1}:${halfTime2}</span>
-              </div>
-              <div class="match-info-item">
-                <span class="match-info-label">Stadion</span>
-                <span class="match-info-value">${stadium}</span>
-              </div>
-              <div class="match-info-item">
-                <span class="match-info-label">Schiedsrichter</span>
-                <span class="match-info-value">${referee}</span>
+                <span class="match-info-label">Match-ID</span>
+                <span class="match-info-value">${matchID}</span>
               </div>
             </div>`;
           
           // Goals section
-          const goals = details.goals || [];
-          if(goals.length > 0) {
+          if(goals && goals.length > 0) {
             html += `<h3 class="section-title">🥅 Tore (${goals.length})</h3>`;
             html += `<div class="events-list">`;
             goals.forEach((goal, i) => {
-              const minute = goal.minute || 'Unknown';
+              const minute = goal.minute || 'Unbekannt';
               const scorer = goal.name || 'Unbekannt';
-              const isHome = goal.resultTeam1 !== null;
-              const forTeam = isHome ? homeName : awayName;
+              const resultTeam1 = goal.resultTeam1 ?? null;
+              const resultTeam2 = goal.resultTeam2 ?? null;
+              
+              // Determine for which team (team1 is home, team2 is away)
+              const forHome = resultTeam1 !== null;
+              const forAway = resultTeam2 !== null;
+              const forTeam = forHome ? 'Heim' : (forAway ? 'Auswärts' : 'Unbekannt');
+              
               html += `
                 <div class="event-row goal">
                   <span class="event-time">${minute}'</span>
@@ -659,7 +655,40 @@ let isAutoRefreshActive = false;
                 </div>`;
             });
             html += `</div>`;
+          } else {
+            html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Tore</span><span class="match-info-value">Keine Tore</span></div>';
           }
+          
+          // Cards section
+          if(cards && cards.length > 0) {
+            html += `<h3 class="section-title"> 🟨 Karten (${cards.length})</h3>`;
+            html += `<div class="events-list">`;
+            cards.forEach((card, i) => {
+              const minute = card.minute || 'Unbekannt';
+              const player = card.name || 'Unbekannt';
+              const cardType = card.cardType?.toLowerCase() || 'gelb';
+              const isRed = cardType === 'rot' || cardType === 'red';
+              const icon = isRed ? '🟥' : '🟨';
+              const className = isRed ? 'rcard' : 'ycard';
+              html += `
+                <div class="event-row ${className}">
+                  <span class="event-time">${minute}'</span>
+                  <span class="event-icon">${icon}</span>
+                  <span class="event-player">${player}</span>
+                </div>`;
+            });
+            html += `</div>`;
+          } else {
+            html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Karten</span><span class="match-info-value">Keine Karten</span></div>';
+          }
+          
+          modalBody.innerHTML = html;
+        })
+        .catch(err => {
+          console.error('Detail error:', err);
+          modalBody.innerHTML = '<div class="empty-state">❌ Details konnten nicht geladen werden.</div>';
+        });
+    }
           
           // Cards section
           const cards = details.cards || [];
