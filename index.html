@@ -425,21 +425,7 @@
       seasonSelect.appendChild(opt);
     }
     seasonSelect.value = currentSeasonStart;
-    // ---- 3️⃣ Helper: get current matchday ----------
-    function loadMatchday(season, league){
-      const url = `https://api.openligadb.de/getcurrentgroup/${league}/${season}`;
-      fetch(url)
-        .then(r=>r.json())
-        .then(matchday=>{
-          matchdaySpan.textContent = matchday || '‑';
-          totalMatchdaysSpan.textContent = 34;
-        })
-        .catch(()=>{
-          matchdaySpan.textContent='‑';
-          totalMatchdaysSpan.textContent='34';
-        });
-    }
-    // ---- 4️⃣ Load table ----------
+    // ---- 3️⃣ Load table & set current matchday ----------
     function loadTable(season, league){
       const apiUrl = `https://api.openligadb.de/getbltable/${league}/${season}`;
       const loader = document.querySelector('.loader');
@@ -447,6 +433,8 @@
       const leagueName = league === 'bl1' ? '1. Bundesliga'
                       : league === 'bl2' ? '2. Bundesliga'
                       : '3. Liga';
+      const totalMatches = (league === 'bl3' ? 38 : 34);
+      totalMatchdaysSpan.textContent = totalMatches;
       document.title = `${leagueName} – ${season}/${season+1}`;
       fetch(apiUrl)
         .then(r=>{
@@ -457,6 +445,9 @@
           loader.innerHTML = '';
           const tbody = document.querySelector('#tbl tbody');
           tbody.innerHTML = '';
+          // Aktueller Spieltag = höchstes "Sp."-Feld
+          const currentMd = Math.max(...data.map(t=>t.matches));
+          matchdaySpan.textContent = currentMd || '‑';
           data.forEach((team,i)=>{
             const tr = document.createElement('tr');
             tr.classList.add('fade-in','slide-down');
@@ -484,14 +475,14 @@
         .catch(err=>{
           console.error(err);
           loader.innerHTML = '❌ Daten konnten nicht geladen werden.';
+          matchdaySpan.textContent = '‑';
         });
     }
-    // ---- 5️⃣ Event handler ----------
+    // ---- 4️⃣ Event handler ----------
     function refresh(){
       const season = seasonSelect.value;
       const league  = leagueSelect.value;
       loadTable(season, league);
-      loadMatchday(season, league);
     }
     leagueSelect.addEventListener('change', refresh);
     seasonSelect.addEventListener('change', refresh);
