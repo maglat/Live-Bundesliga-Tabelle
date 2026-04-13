@@ -430,13 +430,9 @@
       const url = `https://api.openligadb.de/getcurrentgroup/${league}/${season}`;
       fetch(url)
         .then(r=>r.json())
-        .then(data=>{
-          const group = Array.isArray(data) ? data[0] : data;
-          const id = group?.groupOrderID || '‑';
-          matchdaySpan.textContent = id;
-          if (group?.groupOrderID) {
-            totalMatchdaysSpan.textContent = 34;
-          }
+        .then(matchday=>{
+          matchdaySpan.textContent = matchday || '‑';
+          totalMatchdaysSpan.textContent = 34;
         })
         .catch(()=>{
           matchdaySpan.textContent='‑';
