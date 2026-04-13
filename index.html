@@ -430,7 +430,7 @@
       const container = document.getElementById('matches-container');
       container.innerHTML = '<p class="loader"><span class="loader-spinner"></span> Lade Partien …</p>';
       
-      apiUrl(`https://api.openligadb.de/getmatches/${season}/${league}/${md}`)
+      apiUrl(`https://api.openligadb.de/getmatchdata/${league}/${season}/${md}`)
         .then(matches=>{
           container.innerHTML = '';
           if(!matches || matches.length===0) {
@@ -438,37 +438,40 @@
             return;
           }
           matches.forEach(match => {
-            const homeTeam = match.homeTeam;
-            const awayTeam = match.opponent;
-            const homeGoals = match.homeGoals;
-            const awayGoals = match.opponentGoals;
-            const status = match.groupStatus;
-            const startTime = match.startTime;
+            const homeName = match.team1?.teamName || '';
+            const awayName = match.team2?.teamName || '';
+            const homeLogo = match.team1?.teamIconUrl || '';
+            const awayLogo = match.team2?.teamIconUrl || '';
+            const isFinished = match.matchIsFinished;
+            const startTime = match.matchDateTime ? new Date(match.matchDateTime).toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'}) : '-';
+            
+            // Get final score from matchResults
+            const finalResult = match.matchResults?.find(r => r.resultTypeID === 2);
+            const homeGoals = finalResult?.pointsTeam1 ?? (isFinished ? null : 0);
+            const awayGoals = finalResult?.pointsTeam2 ?? (isFinished ? null : 0);
             
             const card = document.createElement('div');
             card.className = 'match-card fade-in';
             
-            const homeLogo = homeTeam ? `<img src="${homeTeam}" alt="" loading="lazy">` : '⚪';
-            const awayLogo = awayTeam ? `<img src="${awayTeam}" alt="" loading="lazy">` : '⚪';
+            let scoreHtml = '';
+            let statusHtml = '';
             
-            const statusText = status === 'FT' ? 'beendet' : status === '1ST' ? '1. Halbzeit' : status === '2ST' ? '2. Halbzeit' : status === 'HT' ? 'halbezeit' : 'vorzeit';
-            const timeStr = startTime ? startTime.substring(11,16) : '-';
+            if (isFinished) {
+              scoreHtml = `<div class="result-score">${homeGoals}:${awayGoals}</div>`;
+              statusHtml = `<div class="result-status">beendet</div>`;
+            } else {
+              scoreHtml = `<div class="result-score">‑:‑</div>`;
+              statusHtml = `<div class="result-status">${startTime}</div>`;
+            }
             
             card.innerHTML = `
               <div class="match-teams">
-                <div class="team-row home"><div>${homeLogo}</div><span>${match.homeTeamName}</span></div>
-                <div class="team-row away"><div>${awayLogo}</div><span>${match.opponentName}</span></div>
+                <div class="team-row home"><div><img src="${homeLogo}" alt="" loading="lazy"></div><span>${homeName}</span></div>
+                <div class="team-row away"><div><img src="${awayLogo}" alt="" loading="lazy"></div><span>${awayName}</span></div>
               </div>
               <div class="match-result">
-                <div class="result-score">
-                  ${status==='NS' || status==='SUS' ? '<span style="font-size:1.4rem;">‑:‑</span>' : `${homeGoals||0}:${awayGoals||0}`}
-                </div>
-                ${status!=='NS' && status!=='SUS' ? `
-                  <div class="result-status">${statusText}</div>
-                ` : ''}
-                ${status!=='FT' && status!=='NS' && startTime ? `
-                  <div class="result-time">${timeStr}</div>
-                ` : ''}
+                ${scoreHtml}
+                ${statusHtml}
               </div>
             `;
             container.appendChild(card);
