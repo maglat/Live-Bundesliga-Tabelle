@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>1. Bundesliga‑Tabelle</title>
+  <title>Bundesliga – Tabelle & Partien</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     /* Reset & CSS Variables */
@@ -37,7 +37,7 @@
     }
     .container{
       width:100%;
-      max-width:860px;
+      max-width:900px;
     }
     /* Header */
     header{
@@ -83,163 +83,82 @@
       border:2px solid #292929;
       border-radius:20px;
       text-decoration:none;
-      transition:transform .2s cubic-bezier(0.4,0,0.2,1),
-                  box-shadow .2s cubic-bezier(0.4,0,0.2,1),
-                  background .2s;
+      transition:transform .2s cubic-bezier(0.4,0,0.2,1), box-shadow .2s cubic-bezier(0.4,0,0.2,1), background .2s;
       box-shadow:2px 2px 0 #292929;
     }
-    .bmc-btn:hover{
-      transform:translate(-2px,-2px);
-      box-shadow:4px 4px 0 #292929;
-    }
-    .bmc-btn:active{
-      transform:translate(0,0);
-      box-shadow:2px 2px 0 #292929;
-    }
+    .bmc-btn:hover{ transform:translate(-2px,-2px); box-shadow:4px 4px 0 #292929; }
+    .bmc-btn:active{ transform:translate(0,0); box-shadow:2px 2px 0 #292929; }
     /* Controls */
     .controls{
-      display:flex;
-      align-items:center;
-      gap:1rem;
-      margin-bottom:1rem;
-      flex-wrap:wrap;
-      padding:0 .3rem;
+      display:flex; align-items:center; gap:1rem; margin-bottom:1rem; flex-wrap:wrap; padding:0 .3rem;
     }
-    .control-group{
-      display:flex;
-      align-items:center;
-      gap:.5rem;
-    }
-    label{
-      font-size:.95rem;
-      color:var(--text-secondary);
-    }
+    .control-group{ display:flex; align-items:center; gap:.5rem; }
+    label{ font-size:.95rem; color:var(--text-secondary); }
     select{
-      padding:.5rem .6rem;
-      font-size:.95rem;
-      border:1px solid #bbb;
-      border-radius:4px;
-      background:var(--card-bg);
-      color:var(--text-primary);
-      cursor:pointer;
+      padding:.5rem .6rem; font-size:.95rem; border:1px solid #bbb; border-radius:4px;
+      background:var(--card-bg); color:var(--text-primary); cursor:pointer;
       transition:border-color .2s, box-shadow .2s;
     }
     select:hover,select:focus{
-      border-color:var(--highlight);
-      outline:none;
-      box-shadow:0 0 0 3px rgba(44,62,80,.15);
+      border-color:var(--highlight); outline:none; box-shadow:0 0 0 3px rgba(44,62,80,.15);
     }
-    /* Refresh Button */
     .refresh-btn{
-      background:transparent;
-      border:1px solid var(--border);
-      color:var(--text-secondary);
-      padding:.5rem .8rem;
-      border-radius:4px;
-      cursor:pointer;
-      font-size:.9rem;
-      display:flex;
-      align-items:center;
-      gap:.4rem;
-      transition:all .2s;
+      background:transparent; border:1px solid var(--border); color:var(--text-secondary);
+      padding:.5rem .8rem; border-radius:4px; cursor:pointer; font-size:.9rem;
+      display:flex; align-items:center; gap:.4rem; transition:all .2s;
     }
-    .refresh-btn:hover{
-      border-color:var(--highlight);
-      color:var(--text-primary);
-      background:rgba(44,62,80,.05);
-    }
-    .refresh-btn.loading svg{
-      animation:spin .8s linear infinite;
-    }
+    .refresh-btn:hover{ border-color:var(--highlight); color:var(--text-primary); background:rgba(44,62,80,.05); }
+    .refresh-btn.loading svg{ animation:spin .8s linear infinite; }
     @keyframes spin{100%{transform:rotate(360deg);}}
-    /* Info */
+    /* Tabs */
+    .tabs{
+      display:flex; gap:.5rem; margin-bottom:1rem; border-bottom:2px solid var(--border);
+      padding-bottom:.5rem;
+    }
+    .tab-btn{
+      background:var(--card-bg); border:1px solid var(--border); color:var(--text-secondary);
+      padding:.6rem 1.2rem; border-radius:4px 4px 0 0; font-size:.95rem; font-weight:600;
+      cursor:pointer; transition:all .2s;
+    }
+    .tab-btn:hover{ background:rgba(44,62,80,.05); color:var(--text-primary); }
+    .tab-btn.active{
+      border-bottom:2px solid transparent; background:var(--card-bg); color:var(--highlight);
+      box-shadow:0 -3px 8px rgba(0,0,0,.06);
+    }
     .info{
-      margin:.6rem 0 1.3rem;
-      font-size:.95rem;
-      color:var(--text-secondary);
-      padding:0 .3rem;
-      display:flex;
-      align-items:center;
-      gap:.5rem;
+      margin:.6rem 0 1.3rem; font-size:.95rem; color:var(--text-secondary);
+      padding:0 .3rem; display:flex; align-items:center; gap:.5rem;
     }
     .info span{font-weight:600;color:var(--text-primary);}
     /* Loading */
     .loader{
-      font-size:.9rem;
-      color:var(--text-secondary);
-      padding:2rem;
-      text-align:center;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:.6rem;
+      font-size:.9rem; color:var(--text-secondary); padding:2rem; text-align:center;
+      display:flex; justify-content:center; align-items:center; gap:.6rem;
     }
-    .loader:empty{padding:0;}
     .loader-spinner{
-      width:20px;height:20px;
-      border:2px solid var(--border);
-      border-top-color:var(--highlight);
-      border-radius:50%;
-      animation:spin .8s linear infinite;
+      width:20px;height:20px; border:2px solid var(--border); border-top-color:var(--highlight);
+      border-radius:50%; animation:spin .8s linear infinite;
     }
     @keyframes spin{100%{transform:rotate(360deg);}}
     /* Table */
     table{
-      border-collapse:separate;
-      border-spacing:0;
-      width:100%;
-      background:var(--card-bg);
-      border-radius:8px;
-      overflow:hidden;
-      box-shadow:var(--shadow);
+      border-collapse:separate; border-spacing:0; width:100%;
+      background:var(--card-bg); border-radius:8px; overflow:hidden; box-shadow:var(--shadow);
       transition:box-shadow .3s;
     }
-    table:hover{
-      box-shadow:var(--shadow-hover);
-    }
-    th,td{
-      padding:.75rem .5rem;
-      text-align:center;
-      font-size:.94rem;
-      transition:color .2s;
-    }
-    th{
-      background:var(--highlight);
-      color:#fff;
-      font-weight:600;
-    }
-    tbody tr{
-      border-bottom:1px solid var(--border);
-      transition:transform .25s cubic-bezier(0.4,0,0.2,1),
-                  box-shadow .25s,
-                  background-color .25s;
-    }
+    table:hover{ box-shadow:var(--shadow-hover); }
+    th,td{ padding:.75rem .5rem; text-align:center; font-size:.94rem; }
+    th{ background:var(--highlight); color:#fff; font-weight:600; }
+    tbody tr{ border-bottom:1px solid var(--border); transition:transform .25s cubic-bezier(0.4,0,0.2,1), box-shadow .25s, background-color .25s; }
     tbody tr:last-child{border-bottom:none;}
-    tbody tr:hover{
-      transform:translateY(-3px);
-      box-shadow:var(--shadow-hover);
-      background:rgba(44,62,80,.04);
-    }
-    .team-cell{
-      display:flex;
-      align-items:center;
-      gap:.4rem;
-    }
-    .team-cell img{
-      width:24px;
-      height:24px;
-      object-fit:contain;
-      transition:transform .2s;
-    }
-    tbody tr:hover .team-cell img{
-      transform:scale(1.1);
-    }
-    /* Highlights */
+    tbody tr:hover{ transform:translateY(-3px); box-shadow:var(--shadow-hover); background:rgba(44,62,80,.04); }
+    .team-cell{ display:flex; align-items:center; gap:.4rem; }
+    .team-cell img{ width:24px; height:24px; object-fit:contain; transition:transform .2s; }
+    tbody tr:hover .team-cell img{ transform:scale(1.1); }
     .champions{background:var(--champions) !important;}
     .europa{background:var(--europa) !important;}
     .relegation{background:var(--relegation) !important;}
     .abstieg{background:var(--abstieg) !important;}
-    /* Columns */
     th:nth-child(1),td:nth-child(1){width:3%;}
     th:nth-child(2),td:nth-child(2){width:35%;text-align:left;padding-left:.8rem;}
     th:nth-child(3),td:nth-child(3){width:8%;}
@@ -249,54 +168,56 @@
     th:nth-child(7),td:nth-child(7){width:8%;}
     th:nth-child(8),td:nth-child(8){width:10%;font-weight:600;}
     /* Legend */
-    .legend{
-      margin-top:1.5rem;
-      padding:1.2rem 1rem;
-      background:var(--card-bg);
-      border-radius:8px;
-      box-shadow:var(--shadow);
-      transition:background .3s, box-shadow .3s;
+    .legend{ margin-top:1.5rem; padding:1.2rem 1rem; background:var(--card-bg); border-radius:8px; box-shadow:var(--shadow); }
+    .legend-title{ font-size:.85rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:var(--text-secondary); margin-bottom:.8rem; }
+    .legend-items{ display:flex; flex-wrap:wrap; gap:1.2rem; }
+    .legend-item{ display:flex; align-items:center; gap:.5rem; font-size:.9rem; color:var(--text-secondary); }
+    .legend-color{ width:12px; height:12px; border-radius:3px; }
+    /* Matches */
+    .match-card{
+      background:var(--card-bg); border-radius:8px; margin-bottom:.5rem; padding:1rem;
+      box-shadow:var(--shadow); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+      gap:1rem; transition:transform .2s, box-shadow .2s;
     }
-    .legend-title{
-      font-size:.85rem;
-      font-weight:600;
-      text-transform:uppercase;
-      letter-spacing:.5px;
-      color:var(--text-secondary);
-      margin-bottom:.8rem;
-      transition:color .3s;
+    .match-card:hover{ transform:translateY(-2px); box-shadow:var(--shadow-hover); }
+    .match-teams{
+      display:flex; flex-direction:column; gap:.3rem; flex:1; min-width:120px;
     }
-    .legend-items{
-      display:flex;
-      flex-wrap:wrap;
-      gap:1.2rem;
+    .team-row{
+      display:flex; align-items:center; gap:.5rem; width:100%;
     }
-    .legend-item{
-      display:flex;
-      align-items:center;
-      gap:.5rem;
-      font-size:.9rem;
-      color:var(--text-secondary);
-      transition:color .2s;
+    .team-row.home{ flex-direction:row; }
+    .team-row.away{ flex-direction:row-reverse; }
+    .team-row img{ width:24px; height:24px; object-fit:contain; }
+    .team-row span{ font-size:.92rem; font-weight:500; min-width:0; flex:1; text-align:right; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .team-row.away span{ text-align:left; }
+    .match-result{
+      display:flex; align-items:center; justify-content:center; gap:.6rem; min-width:80px; text-align:center;
     }
-    .legend-color{
-      width:12px;
-      height:12px;
-      border-radius:3px;
+    .result-score{
+      font-size:1.6rem; font-weight:700; color:var(--highlight); letter-spacing:1px;
+    }
+    .result-status{
+      font-size:.7rem; color:var(--text-secondary); text-transform:uppercase; letter-spacing:.5px; margin-top:.1rem;
+    }
+    .result-time{ font-size:.82rem; color:#888; min-width:35px; text-align:right; }
+    .match-time{ font-size:.82rem; color:#888; margin-top:.2rem; }
+    /* Views */
+    .view-section{ display:none; }
+    .view-section.active{ display:block; }
+    .empty-state{
+      padding:3rem; text-align:center; color:var(--text-secondary); font-size:1rem;
     }
     /* Responsive */
     @media (max-width:640px){
-      body{padding:1rem;}
-      h2{font-size:1.4rem;}
-      .controls{gap:.8rem;}
-      label,select,th,td,.info,.legend-item{font-size:.85rem;}
-      th,td{padding:.6rem .35rem;}
+      body{padding:1rem;} h2{font-size:1.4rem;} .controls{gap:.8rem;}
+      label,select,th,td,.info,.legend-item{font-size:.85rem;} th,td{padding:.6rem .35rem;}
+      .match-card{ flex-direction:row; align-items:flex-start; }
+      .match-result{ flex-direction:column; gap:.1rem; margin:.2rem 0; }
     }
     @media (max-width:440px){
-      th:nth-child(2),td:nth-child(2){width:30%;padding-left:.5rem;}
-      .legend-items{gap:.8rem;}
+      th:nth-child(2),td:nth-child(2){width:30%;padding-left:.5rem;} .legend-items{gap:.8rem;}
     }
-    /* Animations */
     .fade-in{animation:fadeIn .6s ease-out;}
     .slide-down{animation:slideDown .5s ease-out;}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -307,7 +228,7 @@
 <body>
   <div class="container">
     <header>
-      <h2><span class="header-icon">🇩🇪</span>1. Bundesliga‑Tabelle</h2>
+      <h2><span class="header-icon">🇩🇪</span>Bundesliga</h2>
       <a href="https://buymeacoffee.com/maglat" target="_blank" class="bmc-btn" aria-label="Buy me a coffee">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#292929" width="18" height="18">
           <path d="M4.5 3h15a1.5 1.5 0 0 1 1.5 1.5v1.5H3V4.5A1.5 1.5 0 0 1 4.5 3zm2.25 5.25a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5h-4.5zm1.5 3a.75.75 0 1 0 0 1.5h4.5a.75.75 0 1 0 0-1.5h-4.5z"/>
@@ -330,81 +251,97 @@
         <label for="season">Saison:</label>
         <select id="season"></select>
       </div>
-      <button class="refresh-btn" id="refreshBtn" aria-label="Tabelle aktualisieren">
+      <button class="refresh-btn" id="refreshBtn" aria-label="Aktualisieren">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
           <path d="M21 3v5h-5"/>
         </svg>
-        Aktualisieren
+        aktualisieren
       </button>
     </div>
 
-    <p class="info">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-        <line x1="16" y1="2" x2="16" y2="6"/>
-        <line x1="8" y1="2" x2="8" y2="6"/>
-        <line x1="3" y1="10" x2="21" y2="10"/>
-      </svg>
-      Aktueller Spieltag: <span id="matchday">‑</span> / <span id="totalMatchdays">34</span>
-    </p>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('table')" id="tab-table">Tabelle</button>
+      <button class="tab-btn" onclick="switchTab('matches')" id="tab-matches">Partien</button>
+    </div>
 
-    <p class="loader" aria-live="polite"><span class="loader-spinner"></span> Lade Daten …</p>
+    <!-- TABLE VIEW -->
+    <div id="view-table" class="view-section active">
+      <p class="info">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Aktueller Spieltag: <span id="matchday">‑</span> / <span id="totalMatchdays">34</span>
+      </p>
 
-    <table id="tbl">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Mannschaft</th>
-          <th>Sp.</th>
-          <th>S</th>
-          <th>U</th>
-          <th>V</th>
-          <th>+/-</th>
-          <th>Pkt.</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+      <p class="loader" id="table-loader"><span class="loader-spinner"></span> Lade Tabelle …</p>
 
-    <div class="legend">
-      <div class="legend-title">Legende</div>
-      <div class="legend-items">
-        <div class="legend-item">
-          <span class="legend-color" style="background:#d4edda;"></span>
-          Champions‑League (Plätze 1‑4)
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Mannschaft</th>
+            <th>Sp.</th>
+            <th>S</th>
+            <th>U</th>
+            <th>V</th>
+            <th>+/-</th>
+            <th>Pkt.</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="legend">
+        <div class="legend-title">Legende</div>
+        <div class="legend-items">
+          <div class="legend-item"><span class="legend-color" style="background:#d4edda;"></span> Champions‑League (1‑4)</div>
+          <div class="legend-item"><span class="legend-color" style="background:#fff3cd;"></span> Europa‑League (5‑6)</div>
+          <div class="legend-item"><span class="legend-color" style="background:#ffe5b4;"></span> Relegation (16)</div>
+          <div class="legend-item"><span class="legend-color" style="background:#f8d7da;"></span> Abstieg (17‑18)</div>
         </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background:#fff3cd;"></span>
-          Europa‑League (Plätze 5‑6)
+      </div>
+    </div>
+
+    <!-- MATCHES VIEW -->
+    <div id="view-matches" class="view-section">
+      <div class="controls">
+        <div class="control-group">
+          <label for="matchday-select">Spieltag:</label>
+          <select id="matchday-select"></select>
         </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background:#ffe5b4;"></span>
-          Relegations‑Play‑off (Platz 16)
-        </div>
-        <div class="legend-item">
-          <span class="legend-color" style="background:#f8d7da;"></span>
-          Direkter Abstieg (Plätze 17‑18)
-        </div>
+      </div>
+
+      <div id="matches-container">
+        <p class="loader" id="matches-loader"><span class="loader-spinner"></span> Lade Partien …</p>
       </div>
     </div>
   </div>
 
   <script>
-    /* API Docs: https://github.com/matthias-mm/OpenLigaDb */
     const leagueSelect  = document.getElementById('league');
     const seasonSelect  = document.getElementById('season');
     const matchdaySpan  = document.getElementById('matchday');
     const totalMatchdaysSpan = document.getElementById('totalMatchdays');
     const refreshBtn = document.getElementById('refreshBtn');
-    // ---- 1️⃣ Current date & season ----
-    const now      = new Date();
-    const nowYear  = now.getFullYear();
+    const matchdaySelect = document.getElementById('matchday-select');
+
+    let currentMatchday = null;
+    let currentSeason = null;
+    let currentLeague = null;
+
+    // Current date & season
+    const now = new Date();
+    const nowYear = now.getFullYear();
     const nowMonth = now.getMonth() + 1;
     const currentSeasonStart = nowMonth >= 7 ? nowYear : nowYear - 1;
-    // ---- 2️⃣ Dropdown options (season) ----
+
+    // Season dropdown
     const start = nowYear - 5;
-    const end   = nowYear + 1;
+    const end = nowYear + 1;
     for (let yr = start; yr <= end; yr++) {
       const opt = document.createElement('option');
       opt.value = yr;
@@ -412,40 +349,59 @@
       seasonSelect.appendChild(opt);
     }
     seasonSelect.value = currentSeasonStart;
-    // ---- 3️⃣ Load table & set current matchday ----------
-    function loadTable(season, league){
+    currentSeason = currentSeasonStart;
+    currentLeague = leagueSelect.value;
+
+    // Tab switching
+    function switchTab(tab) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-' + tab).classList.add('active');
+      document.getElementById('tab-' + tab).classList.add('active');
+      
+      if(tab === 'matches') {
+        loadMatches();
+      }
+    }
+
+    // Load table
+    function loadTable(season, league) {
       const apiUrl = `https://api.openligadb.de/getbltable/${league}/${season}`;
-      const loader = document.querySelector('.loader');
-      loader.innerHTML = '<span class="loader-spinner"></span> Lade Daten …';
-      const leagueName = league === 'bl1' ? '1. Bundesliga'
-                      : league === 'bl2' ? '2. Bundesliga'
-                      : '3. Liga';
-      const totalMatches = (league === 'bl3' ? 38 : 34);
-      totalMatchdaysSpan.textContent = totalMatches;
-      document.title = `${leagueName} – ${season}/${season+1}`;
+      const loader = document.getElementById('table-loader');
+      loader.innerHTML = '<span class="loader-spinner"></span> Lade Tabelle …';
+      
+      const leagueName = league === 'bl1' ? '1. Bundesliga' : league === 'bl2' ? '2. Bundesliga' : '3. Liga';
+      const totalMd = (league === 'bl3' ? 38 : 34);
+      totalMatchdaysSpan.textContent = totalMd;
+      
       fetch(apiUrl)
-        .then(r=>{
-          if (!r.ok) throw new Error('Network response was not ok');
-          return r.json();
-        })
+        .then(r=>{ if (!r.ok) throw new Error('Network response was not ok'); return r.json(); })
         .then(data=>{
           loader.innerHTML = '';
           const tbody = document.querySelector('#tbl tbody');
           tbody.innerHTML = '';
-          // Aktueller Spieltag = höchstes "Sp."-Feld
-          const currentMd = Math.max(...data.map(t=>t.matches));
-          matchdaySpan.textContent = currentMd || '‑';
+          currentMatchday = Math.max(...data.map(t=>t.matches));
+          matchdaySpan.textContent = currentMatchday || '‑';
+          
+          // Update matchday select
+          matchdaySelect.innerHTML = '';
+          for(let i=1; i<=totalMd; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = `Spieltag ${i}`;
+            matchdaySelect.appendChild(opt);
+          }
+          matchdaySelect.value = currentMatchday;
+          
           data.forEach((team,i)=>{
             const tr = document.createElement('tr');
             tr.classList.add('fade-in','slide-down');
             const pos = i+1;
-            if (pos<=4)          tr.classList.add('champions');
-            else if (pos<=6)     tr.classList.add('europa');
-            else if (pos===16)   tr.classList.add('relegation');
-            else if (pos>=17)    tr.classList.add('abstieg');
-            const logo = team.teamIconUrl
-                       ? `<img src="${team.teamIconUrl}" alt="${team.teamName} Logo">`
-                       : '';
+            if (pos<=4) tr.classList.add('champions');
+            else if (pos<=6) tr.classList.add('europa');
+            else if (pos===16) tr.classList.add('relegation');
+            else if (pos>=17) tr.classList.add('abstieg');
+            const logo = team.teamIconUrl ? `<img src="${team.teamIconUrl}" alt="" loading="lazy">` : '';
             tr.innerHTML = `
               <td>${pos}</td>
               <td class="team-cell">${logo}<span>${team.teamName}</span></td>
@@ -465,20 +421,92 @@
           matchdaySpan.textContent = '‑';
         });
     }
-    // ---- 4️⃣ Event handler ----------
-    function refresh(){
+
+    // Load matches
+    function loadMatches() {
       const season = seasonSelect.value;
-      const league  = leagueSelect.value;
-      loadTable(season, league);
+      const league = leagueSelect.value;
+      const md = matchdaySelect.value;
+      const container = document.getElementById('matches-container');
+      container.innerHTML = '<p class="loader"><span class="loader-spinner"></span> Lade Partien …</p>';
+      
+      apiUrl(`https://api.openligadb.de/getmatches/${season}/${league}/${md}`)
+        .then(matches=>{
+          container.innerHTML = '';
+          if(!matches || matches.length===0) {
+            container.innerHTML = '<div class="empty-state">Keine Partien für diesen Spieltag verfügbar.</div>';
+            return;
+          }
+          matches.forEach(match => {
+            const homeTeam = match.homeTeam;
+            const awayTeam = match.opponent;
+            const homeGoals = match.homeGoals;
+            const awayGoals = match.opponentGoals;
+            const status = match.groupStatus;
+            const startTime = match.startTime;
+            
+            const card = document.createElement('div');
+            card.className = 'match-card fade-in';
+            
+            const homeLogo = homeTeam ? `<img src="${homeTeam}" alt="" loading="lazy">` : '⚪';
+            const awayLogo = awayTeam ? `<img src="${awayTeam}" alt="" loading="lazy">` : '⚪';
+            
+            const statusText = status === 'FT' ? 'beendet' : status === '1ST' ? '1. Halbzeit' : status === '2ST' ? '2. Halbzeit' : status === 'HT' ? 'halbezeit' : 'vorzeit';
+            const timeStr = startTime ? startTime.substring(11,16) : '-';
+            
+            card.innerHTML = `
+              <div class="match-teams">
+                <div class="team-row home"><div>${homeLogo}</div><span>${match.homeTeamName}</span></div>
+                <div class="team-row away"><div>${awayLogo}</div><span>${match.opponentName}</span></div>
+              </div>
+              <div class="match-result">
+                <div class="result-score">
+                  ${status==='NS' || status==='SUS' ? '<span style="font-size:1.4rem;">‑:‑</span>' : `${homeGoals||0}:${awayGoals||0}`}
+                </div>
+                ${status!=='NS' && status!=='SUS' ? `
+                  <div class="result-status">${statusText}</div>
+                ` : ''}
+                ${status!=='FT' && status!=='NS' && startTime ? `
+                  <div class="result-time">${timeStr}</div>
+                ` : ''}
+              </div>
+            `;
+            container.appendChild(card);
+          });
+        })
+        .catch(err=>{
+          console.error(err);
+          container.innerHTML = '<div class="empty-state">❌ Daten konnten nicht geladen werden.</div>';
+        });
     }
+
+    // Helper fetch
+    function apiUrl(url) {
+      return fetch(url).then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); });
+    }
+
+    // Refresh all
+    function refresh() {
+      currentSeason = seasonSelect.value;
+      currentLeague = leagueSelect.value;
+      loadTable(currentSeason, currentLeague);
+      // If matches tab is active, load matches too
+      if(document.getElementById('view-matches').classList.contains('active')) {
+        loadMatches();
+      }
+    }
+
+    // Event listeners
     leagueSelect.addEventListener('change', refresh);
     seasonSelect.addEventListener('change', refresh);
+    matchdaySelect.addEventListener('change', loadMatches);
     refreshBtn.addEventListener('click', ()=>{
       refreshBtn.classList.add('loading');
       refresh();
       setTimeout(()=>refreshBtn.classList.remove('loading'), 500);
     });
-    // ---- 6️⃣ Initial load ----------
+
+    // Initial load
     refresh();
   </script>
 </body>
