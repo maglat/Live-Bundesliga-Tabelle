@@ -640,9 +640,55 @@ let isAutoRefreshActive = false;
           </div>
         </div>`;
         
-        // Note: Goals and Cards require CORS proxy - we don't implement that
-        // html += `<h3 class="section-title">⚽ Tore</h3>`;
-        // html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Details</span><span class="match-info-value">Ereigniseingetragen</span></div>';
+        // Parse matchEvents for goals and cards
+        // Event types: 705001=goal, 705004=yellow card, 705005=red card
+        const events = match.matchEvents || [];
+        const goals = events.filter(e => e.resultEventID === 705001);
+        const cards = events.filter(e => e.resultEventID === 705004 || e.resultEventID === 705005);
+        
+        // Goals section
+        html += `<h3 class="section-title">⚽ Tore</h3>`;
+        html += `<div class="events-list">`;
+        if(goals.length > 0) {
+          goals.forEach(goal => {
+            const minute = goal.minute || '?';
+            const player = goal.name || 'Unbekannt';
+            const forHomeTeam = goal.pointsTeam1 > 0;
+            const teamName = forHomeTeam ? homeTeam.teamName : awayTeam.teamName;
+            html += `
+              <div class="event-row goal">
+                <span class="event-time">${minute}'</span>
+                <span class="event-icon">⚽</span>
+                <span class="event-player">${player}</span>
+                <span class="event-detail">für ${teamName}</span>
+              </div>`;
+          });
+        } else {
+          html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Tore</span><span class="match-info-value">Keine Tore</span></div>';
+        }
+        html += `</div>`;
+        
+        // Cards section  
+        html += `<h3 class="section-title">🟨 Karten</h3>`;
+        html += `<div class="events-list">`;
+        if(cards.length > 0) {
+          cards.forEach(card => {
+            const minute = card.minute || '?';
+            const player = card.name || 'Unbekannt';
+            const isRed = card.resultEventID === 705005;
+            const icon = isRed ? '🟥' : '🟨';
+            const className = isRed ? 'rcard' : 'ycard';
+            html += `
+              <div class="event-row ${className}">
+                <span class="event-time">${minute}'</span>
+                <span class="event-icon">${icon}</span>
+                <span class="event-player">${player}</span>
+              </div>`;
+          });
+        } else {
+          html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Karten</span><span class="match-info-value">Keine Karten</span></div>';
+        }
+        html += `</div>`;
         
         modalBody.innerHTML = html;
     }
