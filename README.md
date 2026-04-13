@@ -21,30 +21,6 @@ Eine moderne, live aktualisierte Bundesliga-Tabelle mit schönen Visualisierunge
 - **Responsive Design**: Funktioniert auf allen Geräten
 - **Auto-Update Toggle**: Ein/Aus Schalter für automatische Updates
 
-## 🛠️ Technologie
-
-- HTML5 / CSS3 / JavaScript (ES6+)
-- Football-Data.org API (kostenlose Liga)
-- Google Fonts (Inter)
-- Modernes CSS (Flexbox, Grid, CSS Variables)
-
-## 📋 Einrichtung
-
-1. Hole dir einen kostenlosen API-Key unter [football-data.org](https://www.football-data.org/)
-2. Ersetze `YOUR_API_KEY_HERE` in Zeile ~135 von `index.html` mit deinem Key
-3. Öffne die Datei im Browser oder deploye sie
-
-## 🎨 Screenshots
-
-Die Tabelle zeigt:
-- Platzierung
-- Teamnamen
-- Gespielte Spiele (P)
-- Form (letzte 5 Spiele)
-- Tordifferenz
-- Punkte
-- Position-Änderung
-
 ## 📝 License
 
 Open Source - frei verwendbar.
