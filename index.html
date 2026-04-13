@@ -610,47 +610,60 @@ let isAutoRefreshActive = false;
       modalBody.innerHTML = loader;
       modal.classList.add('active');
       
-      // Fetch goals and cards separately
-      const goalsUrl = `https://api.openligadb.de/getgoals/${matchID}`;
-      const cardsUrl = `https://api.openligadb.de/getcards/${matchID}`;
-      
-      Promise.all([
-        fetch(goalsUrl).then(r => r.ok ? r.json() : []),
-        fetch(cardsUrl).then(r => r.ok ? r.json() : [])
-      ])
-        .then(([goals, cards]) => {
+      // Fetch goals and cards from match details endpoint
+      fetch(`https://api.openligadb.de/getblmatchdetails/${matchID}`)
+        .then(res => res.json())
+        .then(data => {
           let html = '';
           
-          // Reconstruct match info from current data is complex, skip stadium/referee for now
-          // or we could fetch them too, but let's show what we have
+          // Match info
+          const homeTeam = data.team1?.teamName || 'Unknown';
+          const awayTeam = data.team2?.teamName || 'Unknown';
+          const stadium = data.stadion || 'Unbekannt';
+          const referee = data.schiedsrichter || 'Unbekannt';
+          const halftime = data.halftimeScore || '0:0';
+          const finalResult = data.matchResult?.filter(r => r.matchResultType && r.matchResultType === 2)[0];
+          const homeScore = finalResult?.matchResultTeam1 ?? '-';
+          const awayScore = finalResult?.matchResultTeam2 ?? '-';
+          
           html += `
             <div class="match-info-row">
               <div class="match-info-item">
-                <span class="match-info-label">Match-ID</span>
-                <span class="match-info-value">${matchID}</span>
+                <span class="match-info-label">Ergebnis</span>
+                <span class="match-info-value">${homeScore}:${awayScore}</span>
+              </div>
+              <div class="match-info-item">
+                <span class="match-info-label">Halbzeit</span>
+                <span class="match-info-value">${halftime}</span>
+              </div>
+              <div class="match-info-item">
+                <span class="match-info-label">Stadion</span>
+                <span class="match-info-value">${stadium}</span>
+              </div>
+              <div class="match-info-item">
+                <span class="match-info-label">Schiedsrichter</span>
+                <span class="match-info-value">${referee}</span>
               </div>
             </div>`;
+            
+          // Goals section - parse from matchDetails
+          const goalsRaw = data.matchDetails?.tore || '';
+          const goals = goalsRaw ? goalsRaw.split(';') : [];
           
-          // Goals section
-          if(goals && goals.length > 0) {
-            html += `<h3 class="section-title">🥅 Tore (${goals.length})</h3>`;
+          if(goals.length > 0) {
+            html += `<h3 class="section-title">🥅 Tore</h3>`;
             html += `<div class="events-list">`;
-            goals.forEach((goal, i) => {
-              const minute = goal.minute || 'Unbekannt';
-              const scorer = goal.name || 'Unbekannt';
-              const resultTeam1 = goal.resultTeam1 ?? null;
-              const resultTeam2 = goal.resultTeam2 ?? null;
-              
-              // Determine for which team (team1 is home, team2 is away)
-              const forHome = resultTeam1 !== null;
-              const forAway = resultTeam2 !== null;
-              const forTeam = forHome ? 'Heim' : (forAway ? 'Auswärts' : 'Unbekannt');
-              
+            goals.forEach(g => {
+              const parts = g.split(':');
+              const minute = parts[0] || '?' ;
+              const player = parts[1] || 'Unbekannt';
+              const isHome = parts[2] === '1';
+              const forTeam = isHome ? homeTeam : awayTeam;
               html += `
                 <div class="event-row goal">
                   <span class="event-time">${minute}'</span>
                   <span class="event-icon">⚽</span>
-                  <span class="event-player">${scorer}</span>
+                  <span class="event-player">${player}</span>
                   <span class="event-detail">für ${forTeam}</span>
                 </div>`;
             });
@@ -658,16 +671,20 @@ let isAutoRefreshActive = false;
           } else {
             html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Tore</span><span class="match-info-value">Keine Tore</span></div>';
           }
-          
+      
           // Cards section
-          if(cards && cards.length > 0) {
-            html += `<h3 class="section-title"> 🟨 Karten (${cards.length})</h3>`;
+          const cardsRaw = data.matchDetails?.kategorien || '';
+          const cards = cardsRaw ? cardsRaw.split(';') : [];
+      
+          if(cards.length > 0) {
+            html += `<h3 class="section-title"> 🟨 Karten</h3>`;
             html += `<div class="events-list">`;
-            cards.forEach((card, i) => {
-              const minute = card.minute || 'Unbekannt';
-              const player = card.name || 'Unbekannt';
-              const cardType = card.cardType?.toLowerCase() || 'gelb';
-              const isRed = cardType === 'rot' || cardType === 'red';
+            cards.forEach(c => {
+              const parts = c.split(':');
+              const minute = parts[0] || '?' ;
+              const player = parts[1] || 'Unbekannt';
+              const type = (parts[2] || '').toLowerCase();
+              const isRed = type.includes('rot') || type.includes('red');
               const icon = isRed ? '🟥' : '🟨';
               const className = isRed ? 'rcard' : 'ycard';
               html += `
@@ -685,8 +702,8 @@ let isAutoRefreshActive = false;
           modalBody.innerHTML = html;
         })
         .catch(err => {
-          console.error('Detail error:', err);
-          modalBody.innerHTML = '<div class="empty-state">❌ Details konnten nicht geladen werden.</div>';
+          console.error('Match detail error:', err);
+          modalBody.innerHTML = '<div class="empty-state">❌ Details konnten nicht geladen werden. <br><br><small>Fehler: ' + err + '</small></div>';
         });
     }
     
