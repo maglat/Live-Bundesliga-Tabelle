@@ -528,7 +528,10 @@ let isAutoRefreshActive = false;
           matchdaySpan.textContent = '‑';
         });
     }
-
+    
+    // Global storage for match day data (to avoid CORS issues)
+    var cachedMatchdayData = null;
+    
     // Load matches
     function loadMatches() {
       const season = seasonSelect.value;
@@ -539,6 +542,9 @@ let isAutoRefreshActive = false;
       
       apiUrl(`https://api.openligadb.de/getmatchdata/${league}/${season}/${md}`)
         .then(matches=>{
+          // Cache the data for use in modal
+          cachedMatchdayData = { league, season, md, matches };
+          
           container.innerHTML = '';
           if(!matches || matches.length===0) {
             container.innerHTML = '<div class="empty-state">Keine Partien für diesen Spieltag verfügbar.</div>';
@@ -561,7 +567,7 @@ let isAutoRefreshActive = false;
             const card = document.createElement('div');
             card.className = 'match-card fade-in';
             card.style.cursor = 'pointer';
-            card.onclick = () => showMatchDetails(matchID);
+            card.onclick = () => showMatchDetails(match);
             
             let scoreHtml = '';
             let statusHtml = '';
@@ -592,90 +598,53 @@ let isAutoRefreshActive = false;
           container.innerHTML = '<div class="empty-state">❌ Daten konnten nicht geladen werden.</div>';
         });
     }
-
-    // Load match details
-    function showMatchDetails(matchID) {
-      const season = seasonSelect.value;
-      const league = leagueSelect.value;
+    
+    // Show match details from cached data (no CORS issues since we already have it!)
+    function showMatchDetails(match) {
       const modal = document.getElementById('modal');
       const modalBody = document.getElementById('modal-body');
       const modalTitle = document.getElementById('modal-title');
-      const loader = '<p class="loader"><span class="loader-spinner"></span> Lade Details …</p>';
       
-      if(!matchID || matchID === undefined || matchID === null) {
-        modalBody.innerHTML = '<div class="empty-state">❌ Match-ID fehlt</div>';
-        setTimeout(() => closeModal(), 2000);
-        return;
-      }
+      const homeTeam = match.team1;
+      const awayTeam = match.team2;
+      const isFinished = match.matchIsFinished;
+      const startTime = match.matchDateTime ? new Date(match.matchDateTime).toLocaleString('de-DE', {hour:'2-digit', minute:'2-digit'}) : '-' ;
       
-      modalTitle.textContent = 'Spieldetails';
-      modalBody.innerHTML = loader;
+      // Get final score from matchResults
+      const finalResult = match.matchResults?.find(r => r.resultTypeID === 2);
+      const homeGoals = finalResult?.pointsTeam1 ?? 0;
+      const awayGoals = finalResult?.pointsTeam2 ?? 0;
+      
+      modalTitle.textContent = `${homeTeam.teamName} vs ${awayTeam.teamName}`;
       modal.classList.add('active');
       
-      // Fetch goals and cards separately - these endpoints work without CORS issues
-      const goalsUrl = `https://api.openligadb.de/getgoals/${matchID}`;
-      const cardsUrl = `https://api.openligadb.de/getbllivecards/${matchID}`;
-      
-      Promise.all([
-        fetch(goalsUrl).then(r => r.ok ? r.json() : []),
-        fetch(cardsUrl).then(r => r.ok ? r.json() : [])
-      ])
-        .then(([goals, cards]) => {
-          let html = '';
-          
-          // Match info
-          // We'll skip stadium/ref as they come from the blocked endpoint
-          html += `<h3 class="section-title">🥅 Tore</h3>`;
-          
-          if(goals && goals.length > 0) {
-            html += `<div class="events-list">`;
-            goals.forEach(g => {
-              const minute = g.minute || '?';
-              const player = g.name || 'Unbekannt';
-              const team = g.pointsTeam1 > 0 ? 'Heim' : 'Auswärts';
-              html += `
-                <div class="event-row goal">
-                  <span class="event-time">${minute}'</span>
-                  <span class="event-icon">⚽</span>
-                  <span class="event-player">${player}</span>
-                  <span class="event-detail">${team}</span>
-                </div>`;
-            });
-            html += `</div>`;
-          } else {
-            html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Tore</span><span class="match-info-value">Keine Tore</span></div>';
-          }
-      
-          // Cards section
-          html += `<h3 class="section-title"> 🟨 Karten</h3>`;
-          
-          if(cards && cards.length > 0) {
-            html += `<div class="events-list">`;
-            cards.forEach(c => {
-              const minute = c.minute || '?';
-              const player = c.name || 'Unbekannt';
-              const type = (c.cardType || '').toLowerCase();
-              const isRed = type.includes('rot') || type.includes('red');
-              const icon = isRed ? '🟥' : '🟨';
-              const className = isRed ? 'rcard' : 'ycard';
-              html += `
-                <div class="event-row ${className}">
-                  <span class="event-time">${minute}'</span>
-                  <span class="event-icon">${icon}</span>
-                  <span class="event-player">${player}</span>
-                </div>`;
-            });
-            html += `</div>`;
-          } else {
-            html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Karten</span><span class="match-info-value">Keine Karten</span></div>';
-          }
-          
-          modalBody.innerHTML = html;
-        })
-        .catch(err => {
-          console.error('Match detail error:', err);
-          modalBody.innerHTML = '<div class="empty-state">❌ Fehler: '+err+'</div>';
-        });
+      let html = `
+        <div class="match-info-row">
+          <div class="match-info-item">
+            <span class="match-info-label">Ergebnis</span>
+            <span class="match-info-value">${isFinished ? `${homeGoals}:${awayGoals}` : '‑:‑'}</span>
+          </div>
+          <div class="match-info-item">
+            <span class="match-info-label">Status</span>
+            <span class="match-info-value">${isFinished ? 'Beendet' : startTime}</span>
+          </div>
+          <div class="match-info-item">
+            <span class="match-info-label">Liga</span>
+            <span class="match-info-value">${cachedMatchdayData.season}/${cachedMatchdayData.season+1}</span>
+          </div>
+        </div>
+        <div class="match-info-row" style="border-bottom:none;padding-bottom:0;margin-bottom:0.5rem;">
+          <div class="match-info-item">
+            <span class="match-info-label">Spieltag</span>
+            <span class="match-info-value">${cachedMatchdayData.md}</span>
+          </div>
+        </div>`;
+        
+        // Note: Goals and Cards require CORS proxy - we don't implement that
+        // html += `<h3 class="section-title">⚽ Tore</h3>`;
+        // html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Details</span><span class="match-info-value">Ereigniseingetragen</span></div>';
+        
+        modalBody.innerHTML = html;
     }
     
     function closeModal() {
