@@ -718,54 +718,6 @@ let isAutoRefreshActive = false;
         
         modalBody.innerHTML = html;
     }
-        html += `</div>`;
-        
-        // Cards section  
-        html += `<h3 class="section-title"> 🟨 Karten</h3>`;
-        html += `<div class="events-list">`;
-        if(cards.length > 0) {
-          cards.forEach(card => {
-            const minute = card.minute || '?';
-            const player = card.playerName || 'Unbekannt';
-            const isRed = card.matchEventType === 705005;
-            const icon = isRed ? '🟥' : '🟨';
-            const className = isRed ? 'rcard' : 'ycard';
-            html += `
-              <div class="event-row ${className}">
-                <span class="event-time">${minute}'</span>
-                <span class="event-icon">${icon}</span>
-                <span class="event-player">${player}</span>
-              </div>`;
-          });
-        } else {
-          html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Karten</span><span class="match-info-value">Keine Karten</span></div>';
-        }
-        html += `</div>`;
-        
-        // Cards section  
-        html += `<h3 class="section-title">🟨 Karten</h3>`;
-        html += `<div class="events-list">`;
-        if(cards.length > 0) {
-          cards.forEach(card => {
-            const minute = card.minute || '?';
-            const player = card.name || 'Unbekannt';
-            const isRed = card.resultEventID === 705005;
-            const icon = isRed ? '🟥' : '🟨';
-            const className = isRed ? 'rcard' : 'ycard';
-            html += `
-              <div class="event-row ${className}">
-                <span class="event-time">${minute}'</span>
-                <span class="event-icon">${icon}</span>
-                <span class="event-player">${player}</span>
-              </div>`;
-          });
-        } else {
-          html += '<div class="match-info-item" style="padding:1rem 0;"><span class="match-info-label">Karten</span><span class="match-info-value">Keine Karten</span></div>';
-        }
-        html += `</div>`;
-        
-        modalBody.innerHTML = html;
-    }
     
     function closeModal() {
       document.getElementById('modal').classList.remove('active');
