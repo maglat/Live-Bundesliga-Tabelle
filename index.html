@@ -689,36 +689,6 @@ let isAutoRefreshActive = false;
           modalBody.innerHTML = '<div class="empty-state">❌ Details konnten nicht geladen werden.</div>';
         });
     }
-          
-          // Cards section
-          const cards = details.cards || [];
-          if(cards.length > 0) {
-            html += `<h3 class="section-title">🟨 Karten (${cards.length})</h3>`;
-            html += `<div class="events-list">`;
-            cards.forEach((card, i) => {
-              const minute = card.minute || 'Unknown';
-              const player = card.name || 'Unbekannt';
-              const type = card.cardType || 'yellow';
-              const isRed = type === 'red';
-              const icon = isRed ? '🟥' : '🟨';
-              const className = isRed ? 'rcard' : 'ycard';
-              html += `
-                <div class="event-row ${className}">
-                  <span class="event-time">${minute}'</span>
-                  <span class="event-icon">${icon}</span>
-                  <span class="event-player">${player}</span>
-                </div>`;
-            });
-            html += `</div>`;
-          }
-          
-          modalBody.innerHTML = html;
-        })
-        .catch(err => {
-          console.error(err);
-          modalBody.innerHTML = '<div class="empty-state">❌ Details konnten nicht geladen werden.</div>';
-        });
-    }
     
     function closeModal() {
       document.getElementById('modal').classList.remove('active');
