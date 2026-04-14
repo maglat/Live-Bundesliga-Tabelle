@@ -542,16 +542,6 @@
           
           <div class="stat-grid">
             <div class="stat-card">
-              <span class="stat-card-icon">📊</span>
-              <div id="teamStatMatches" class="stat-card-value">-</div>
-              <div class="stat-card-label">Spiele</div>
-            </div>
-            <div class="stat-card">
-              <span class="stat-card-icon">⭐</span>
-              <div id="teamStatPoints" class="stat-card-value">-</div>
-              <div class="stat-card-label">Punkte</div>
-            </div>
-            <div class="stat-card">
               <span class="stat-card-icon">✅</span>
               <div id="teamStatWins" class="stat-card-value">-</div>
               <div class="stat-card-label">Siege</div>
@@ -560,6 +550,16 @@
               <span class="stat-card-icon">🤝</span>
               <div id="teamStatDraws" class="stat-card-value">-</div>
               <div class="stat-card-label">Unentschieden</div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card-icon">⛔</span>
+              <div id="teamStatLosses" class="stat-card-value">-</div>
+              <div class="stat-card-label">Niederlagen</div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card-icon">💪</span>
+              <div id="teamStatWinRate" class="stat-card-value">-</div>
+              <div class="stat-card-label">Siegquote</div>
             </div>
           </div>
           
@@ -570,10 +570,6 @@
           <div class="stat-row stat-highlight">
             <div class="stat-label"><span>🛡️</span> Gegentore pro Spiel</div>
             <div id="teamStatConcededPerGame" class="stat-value team-gegentor">-</div>
-          </div>
-          <div class="stat-row stat-highlight">
-            <div class="stat-label"><span>💪</span> Siegquote</div>
-            <div id="teamStatWinRate" class="stat-value team-siegquote">-</div>
           </div>
           <div class="stat-row">
             <div class="stat-label">🟢 Eigene Tore</div>
@@ -586,10 +582,6 @@
           <div class="stat-row">
             <div class="stat-label">⚖️ Tordifferenz</div>
             <div id="teamStatGoalDiff" class="stat-value">-</div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-label">⛔ Niederlagen</div>
-            <div id="teamStatLosses" class="stat-value">-</div>
           </div>
         </div>
       </div>
