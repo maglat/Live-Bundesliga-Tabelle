@@ -831,7 +831,9 @@ let isAutoRefreshActive = false;
 
   // Show match popup
   function showMatchPopup(matchID, homeName, awayName, homeLogo, awayLogo, matchday) {
+    console.log('showMatchPopup called:', { matchID, matchday, currentLeague, currentSeason });
     const apiUrl = `https://api.openligadb.de/getmatchdata/${currentLeague}/${currentSeason}/${matchday}`;
+    console.log('API URL:', apiUrl);
     
     fetch(apiUrl)
       .then(r=>{ if(!r.ok) throw new Error('Network error'); return r.json(); })
@@ -891,10 +893,10 @@ let isAutoRefreshActive = false;
         const overlay = document.getElementById('matchPopup');
         overlay.style.display = 'flex';
         setTimeout(()=>overlay.classList.add('active'),10);
-      })
-      .catch(err=>{
-        console.error(err);
-      });
+        })
+        .catch(err=>{
+          console.error('Error in showMatchPopup:', err);
+        });
   }
 
   // Show team stats popup
