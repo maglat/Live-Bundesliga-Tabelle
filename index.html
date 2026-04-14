@@ -780,7 +780,7 @@ let isAutoRefreshActive = false;
             container.appendChild(card);
             card.style.cursor = 'pointer';
             card.addEventListener('click', () => {
-              showMatchPopup(matchID, homeName, awayName, homeLogo, awayLogo);
+              showMatchPopup(matchID, homeName, awayName, homeLogo, awayLogo, md);
             });
           });
         })
@@ -830,8 +830,8 @@ let isAutoRefreshActive = false;
   });
 
   // Show match popup
-  function showMatchPopup(matchID, homeName, awayName, homeLogo, awayLogo) {
-    const apiUrl = `https://api.openligadb.de/getmatchdata/${currentLeague}/${currentSeason}/${currentMatchday}`;
+  function showMatchPopup(matchID, homeName, awayName, homeLogo, awayLogo, matchday) {
+    const apiUrl = `https://api.openligadb.de/getmatchdata/${currentLeague}/${currentSeason}/${matchday}`;
     
     fetch(apiUrl)
       .then(r=>{ if(!r.ok) throw new Error('Network error'); return r.json(); })
