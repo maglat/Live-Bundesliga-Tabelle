@@ -840,6 +840,13 @@ let isAutoRefreshActive = false;
         if(!match) return;
         
         const goals = match.goals || [];
+        const sortedGoals = goals.sort((a, b) => {
+          const minA = a.matchMinute ?? Infinity;
+          const minB = b.matchMinute ?? Infinity;
+          if(minA !== minB) return minA - minB;
+          return (a.isOvertime ? 1 : 0) - (b.isOvertime ? 1 : 0);
+        });
+        
         const halftime = match.matchResults?.find(r=>r.resultTypeID===1);
         const finalResult = match.matchResults?.find(r=>r.resultTypeID===2);
         
@@ -863,12 +870,12 @@ let isAutoRefreshActive = false;
         }
         
         const timeline = document.getElementById('popupTimeline');
-        if(goals.length===0){
+        if(sortedGoals.length===0){
           timeline.innerHTML = '<div class="timeline-empty">Keine Tore verzeichnet.</div>';
         } else {
-          timeline.innerHTML = goals.map(goal=>`
+          timeline.innerHTML = sortedGoals.map(goal=>`
             <div class="timeline-item">
-              <div class="timeline-time">${goal.matchMinute}'</div>
+              <div class="timeline-time">${goal.matchMinute ?? '‑'}'</div>
               <div class="timeline-icon">⚽${goal.isPenalty?'🎯':''}</div>
               <div class="timeline-content">
                 <div class="timeline-label">
