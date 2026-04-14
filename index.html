@@ -838,7 +838,9 @@ let isAutoRefreshActive = false;
     fetch(apiUrl)
       .then(r=>{ if(!r.ok) throw new Error('Network error'); return r.json(); })
       .then(data=>{
+        console.log('API response data length:', data.length);
         const match = data.find(m=>m.matchID===matchID);
+        console.log('Found match:', match ? 'yes' : 'no', match ? {matchID: match.matchID, team1: match.team1?.teamName, team2: match.team2?.teamName} : null);
         if(!match) return;
         
         const goals = match.goals || [];
@@ -890,9 +892,11 @@ let isAutoRefreshActive = false;
           `).join('');
         }
         
+        console.log('Setting popup, overlay exists:', !!document.getElementById('matchPopup'));
         const overlay = document.getElementById('matchPopup');
         overlay.style.display = 'flex';
         setTimeout(()=>overlay.classList.add('active'),10);
+        console.log('Popup should be visible now');
         })
         .catch(err=>{
           console.error('Error in showMatchPopup:', err);
