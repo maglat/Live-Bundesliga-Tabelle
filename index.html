@@ -253,6 +253,108 @@
     .slide-down{animation:slideDown .5s ease-out;}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:translateY(0);opacity:1}}
+    /* Popup Modal */
+    .popup-overlay{
+      position:fixed;top:0;left:0;right:0;bottom:0;
+      background:rgba(0,0,0,0.6);
+      display:none;
+      justify-content:center;
+      align-items:center;
+      z-index:1000;
+      opacity:0;
+      transition:opacity .3s ease;
+    }
+    .popup-overlay.active{opacity:1;}
+    .popup-content{
+      background:var(--card-bg);
+      border-radius:12px;
+      max-width:600px;
+      width:90%;
+      max-height:80vh;
+      overflow-y:auto;
+      box-shadow:var(--shadow-hover);
+      position:relative;
+      transform:translateY(20px);
+      transition:transform .3s ease;
+    }
+    .popup-overlay.active .popup-content{transform:translateY(0);}
+    .popup-close{
+      position:absolute;top:1rem;right:1rem;
+      background:var(--highlight);
+      color:#fff;border:none;border-radius:50%;
+      width:32px;height:32px;
+      cursor:pointer;font-size:1.5rem;line-height:1;
+      z-index:10;transition:background .2s;
+    }
+    .popup-close:hover{background:var(--accent-hover);}
+    /* Popup Header */
+    .popup-header{
+      padding:2rem 1.5rem 1rem;
+      background:linear-gradient(135deg,var(--highlight),var(--accent-hover));
+      color:#fff;text-align:center;
+    }
+    .popup-teams{
+      display:flex;justify-content:space-between;align-items:center;
+      gap:1rem;margin-bottom:1rem;
+    }
+    .popup-team{
+      display:flex;flex-direction:column;align-items:center;
+      gap:.5rem;flex:1;
+    }
+    .popup-team img{width:48px;height:48px;object-fit:contain;}
+    .popup-team span{
+      font-size:.9rem;font-weight:600;white-space:nowrap;
+      overflow:hidden;text-overflow:ellipsis;max-width:150px;
+    }
+    .popup-vs{font-size:1.2rem;font-weight:700;opacity:.7;}
+    .score-banner{margin:1rem 0;}
+    .final-score{
+      font-size:3rem;font-weight:700;letter-spacing:2px;
+    }
+    .halftime-score{font-size:.9rem;opacity:.8;margin-top:.3rem;}
+    /* Timeline */
+    .timeline{padding:1.5rem;}
+    .timeline-title{
+      font-size:1rem;font-weight:600;color:var(--text-primary);
+      margin-bottom:1rem;text-transform:uppercase;letter-spacing:.5px;
+    }
+    .timeline-item{
+      display:flex;align-items:center;gap:1rem;
+      padding:.8rem;margin-bottom:.5rem;
+      background:var(--bg-color);border-radius:8px;
+      transition:transform .2s,background .2s;
+    }
+    .timeline-item:hover{
+      background:rgba(44,62,80,0.05);transform:translateX(5px);
+    }
+    .timeline-time{
+      font-size:.9rem;font-weight:700;color:var(--highlight);
+      min-width:35px;
+    }
+    .timeline-icon{font-size:1.5rem;}
+    .timeline-content{
+      flex:1;display:flex;justify-content:space-between;align-items:center;gap:1rem;
+    }
+    .timeline-label{
+      font-size:.95rem;color:var(--text-primary);font-weight:500;
+    }
+    .timeline-label .penalty{
+      font-size:.8rem;color:var(--text-secondary);margin-left:.3rem;
+    }
+    .timeline-score{
+      font-size:1.1rem;font-weight:700;color:var(--highlight);
+    }
+    .timeline-empty{
+      text-align:center;padding:2rem;color:var(--text-secondary);font-size:.95rem;
+    }
+    @media (max-width:480px){
+      .popup-content{width:95%;max-height:90vh;}
+      .popup-header{padding:1.5rem 1rem .5rem;}
+      .popup-team img{width:40px;height:40px;}
+      .popup-team span{font-size:.85rem;max-width:100px;}
+      .final-score{font-size:2.5rem;}
+      .timeline{padding:1rem;}
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -352,6 +454,34 @@
 
       <div id="matches-container">
         <p class="loader" id="matches-loader"><span class="loader-spinner"></span> Lade Partien …</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Match Popup -->
+  <div class="popup-overlay" id="matchPopup">
+    <div class="popup-content">
+      <button class="popup-close" id="popupClose">×</button>
+      <div class="popup-header">
+        <div class="popup-teams">
+          <div class="popup-team home">
+            <img id="popupHomeLogo" src="" alt="">
+            <span id="popupHomeName"></span>
+          </div>
+          <div class="popup-vs">vs</div>
+          <div class="popup-team away">
+            <span id="popupAwayName"></span>
+            <img id="popupAwayLogo" src="" alt="">
+          </div>
+        </div>
+        <div class="score-banner">
+          <div class="final-score" id="popupFinalScore">‑:‑</div>
+          <div class="halftime-score" id="popupHalftimeScore">HT: ‑:‑</div>
+        </div>
+      </div>
+      <div class="timeline">
+        <div class="timeline-title">Tor-Ereignisse</div>
+        <div id="popupTimeline"></div>
       </div>
     </div>
   </div>
@@ -515,6 +645,10 @@ let isAutoRefreshActive = false;
               </div>
             `;
             container.appendChild(card);
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+              showMatchPopup(matchID, homeName, awayName, homeLogo, awayLogo);
+            });
           });
         })
         .catch(err=>{
@@ -560,6 +694,99 @@ let isAutoRefreshActive = false;
   // Cleanup on unload
   window.addEventListener('beforeunload', ()=>{
     clearTimeout(autoRefreshTimer);
+  });
+
+  // Show match popup
+  function showMatchPopup(matchID, homeName, awayName, homeLogo, awayLogo) {
+    const apiUrl = `https://api.openligadb.de/getmatchdata/${currentLeague}/${currentSeason}/${currentMatchday}`;
+    
+    fetch(apiUrl)
+      .then(r=>{ if(!r.ok) throw new Error('Network error'); return r.json(); })
+      .then(data=>{
+        const match = data.find(m=>m.matchID===matchID);
+        if(!match) return;
+        
+        const goals = match.goals || [];
+        const halftime = match.matchResults?.find(r=>r.resultTypeID===1);
+        const finalResult = match.matchResults?.find(r=>r.resultTypeID===2);
+        
+        document.getElementById('popupHomeName').textContent = homeName;
+        document.getElementById('popupAwayName').textContent = awayName;
+        document.getElementById('popupHomeLogo').src = homeLogo;
+        document.getElementById('popupAwayLogo').src = awayLogo;
+        
+        if(finalResult){
+          document.getElementById('popupFinalScore').textContent = 
+            `${finalResult.pointsTeam1}:${finalResult.pointsTeam2}`;
+        } else {
+          document.getElementById('popupFinalScore').textContent = '‑:‑';
+        }
+        
+        if(halftime){
+          document.getElementById('popupHalftimeScore').textContent = 
+            `HT: ${halftime.pointsTeam1}:${halftime.pointsTeam2}`;
+        } else {
+          document.getElementById('popupHalftimeScore').textContent = 'HT: ‑:‑';
+        }
+        
+        const timeline = document.getElementById('popupTimeline');
+        if(goals.length===0){
+          timeline.innerHTML = '<div class="timeline-empty">Keine Tore verzeichnet.</div>';
+        } else {
+          timeline.innerHTML = goals.map(goal=>`
+            <div class="timeline-item">
+              <div class="timeline-time">${goal.matchMinute}'</div>
+              <div class="timeline-icon">⚽${goal.isPenalty?'🎯':''}</div>
+              <div class="timeline-content">
+                <div class="timeline-label">
+                  ${goal.goalGetterName}
+                  ${goal.isPenalty?'<span class="penalty">Elfmeter</span>':''}
+                </div>
+                <div class="timeline-score">${goal.scoreTeam1}:${goal.scoreTeam2}</div>
+              </div>
+            </div>
+          `).join('');
+        }
+        
+        const overlay = document.getElementById('matchPopup');
+        overlay.style.display = 'flex';
+        setTimeout(()=>overlay.classList.add('active'),10);
+      })
+      .catch(err=>{
+        console.error(err);
+      });
+  }
+
+  // Hide popup
+  function hidePopup() {
+    const overlay = document.getElementById('matchPopup');
+    overlay.classList.remove('active');
+    setTimeout(()=>{
+      overlay.style.display = 'none';
+      overlay.classList.remove('active');
+    },300);
+  }
+
+  // Popup event listeners
+  const popupClose = document.getElementById('popupClose');
+  const popupOverlay = document.getElementById('matchPopup');
+  
+  if(popupClose){
+    popupClose.addEventListener('click', hidePopup);
+  }
+  
+  if(popupOverlay){
+    popupOverlay.addEventListener('click',(e)=>{
+      if(e.target === popupOverlay){
+        hidePopup();
+      }
+    });
+  }
+  
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='Escape' && popupOverlay.classList.contains('active')){
+      hidePopup();
+    }
   });
 
   // Event listeners
