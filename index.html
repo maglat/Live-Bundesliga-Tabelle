@@ -350,6 +350,69 @@
     .timeline-empty{
       text-align:center;padding:2rem;color:var(--text-secondary);font-size:.95rem;
     }
+    /* Team Stats Popup */
+    .team-stats-container{
+      padding:0;
+    }
+    .team-header{
+      padding:1.5rem;background:linear-gradient(135deg,var(--highlight),var(--accent-hover));
+      color:#fff;text-align:center;border-radius:12px 12px 0 0;
+    }
+    .team-header-logo{
+      width:64px;height:64px;object-fit:contain;margin:0 auto .8rem;
+      background:#fff;border-radius:50%;padding:.5rem;box-shadow:0 2px 8px rgba(0,0,0,.2);
+    }
+    .team-header-name{
+      font-size:1.3rem;font-weight:700;margin-bottom:.4rem;
+    }
+    .team-header-badges{
+      display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;
+    }
+    .team-badge{
+      font-size:.75rem;background:rgba(255,255,255,0.2);
+      color:#fff;padding:.25rem .6rem;border-radius:10px;
+      font-weight:600;text-transform:uppercase;letter-spacing:.3px;
+      box-shadow:0 1px 3px rgba(0,0,0,.2);
+    }
+    .team-stats-content{
+      padding:1.5rem;
+    }
+    .team-stats-title{
+      font-size:1rem;font-weight:600;color:var(--text-primary);
+      margin-bottom:1rem;text-transform:uppercase;letter-spacing:.5px;
+    }
+    .stat-row{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:.7rem 0;border-bottom:1px solid var(--border);
+    }
+    .stat-row:last-child{border-bottom:none;}
+    .stat-label{
+      font-size:.95rem;color:var(--text-secondary);display:flex;align-items:center;gap:.5rem;
+    }
+    .stat-value{
+      font-size:1rem;font-weight:700;color:var(--highlight);
+    }
+    .stat-grid{
+      display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin:1rem 0;
+    }
+    .stat-card{
+      background:var(--bg-color);padding:.8rem;border-radius:8px;text-align:center;
+    }
+    .stat-card-icon{
+      font-size:1.5rem;display:block;margin-bottom:.3rem;
+    }
+    .stat-card-value{
+      font-size:1.2rem;font-weight:700;color:var(--highlight);
+    }
+    .stat-card-label{
+      font-size:.8rem;color:var(--text-secondary);margin-top:.2rem;
+    }
+    .stat-highlight{
+      background:rgba(44,62,80,0.05);border-left:3px solid var(--highlight);
+    }
+    .team-tor-spiel{color:#1976d2 !important;}
+    .team-gegentor{color:#d32f2f !important;}
+    .team-siegquote{color:#388e3c !important;}
     @media (max-width:480px){
       .popup-content{width:95%;max-height:90vh;}
       .popup-header{padding:1.5rem 1rem .5rem;}
@@ -357,6 +420,9 @@
       .popup-team span{font-size:.85rem;max-width:100px;}
       .final-score{font-size:2.5rem;}
       .timeline{padding:1rem;}
+      .team-header-logo{width:50px;height:50px;}
+      .team-header-name{font-size:1.1rem;}
+      .stat-grid{grid-template-columns:1fr;}
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
@@ -457,6 +523,75 @@
 
       <div id="matches-container">
         <p class="loader" id="matches-loader"><span class="loader-spinner"></span> Lade Partien …</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team Stats Popup -->
+  <div class="popup-overlay" id="teamPopup">
+    <div class="popup-content">
+      <button class="popup-close" id="teamPopupClose">×</button>
+      <div class="team-stats-container">
+        <div class="team-header">
+          <img id="teamPopupLogo" class="team-header-logo" src="" alt="">
+          <div id="teamPopupName" class="team-header-name"></div>
+          <div id="teamPopupBadges" class="team-header-badges"></div>
+        </div>
+        <div class="team-stats-content">
+          <div class="team-stats-title">Saison-Statistik</div>
+          
+          <div class="stat-grid">
+            <div class="stat-card">
+              <span class="stat-card-icon">📊</span>
+              <div id="teamStatMatches" class="stat-card-value">-</div>
+              <div class="stat-card-label">Spiele</div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card-icon">⭐</span>
+              <div id="teamStatPoints" class="stat-card-value">-</div>
+              <div class="stat-card-label">Punkte</div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card-icon">✅</span>
+              <div id="teamStatWins" class="stat-card-value">-</div>
+              <div class="stat-card-label">Siege</div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-card-icon">🤝</span>
+              <div id="teamStatDraws" class="stat-card-value">-</div>
+              <div class="stat-card-label">Unentschieden</div>
+            </div>
+          </div>
+          
+          <div class="stat-row stat-highlight">
+            <div class="stat-label"><span>⚽</span> Tore pro Spiel</div>
+            <div id="teamStatGoalsPerGame" class="stat-value team-tor-spiel">-</div>
+          </div>
+          <div class="stat-row stat-highlight">
+            <div class="stat-label"><span>🛡️</span> Gegentore pro Spiel</div>
+            <div id="teamStatConcededPerGame" class="stat-value team-gegentor">-</div>
+          </div>
+          <div class="stat-row stat-highlight">
+            <div class="stat-label"><span>💪</span> Siegquote</div>
+            <div id="teamStatWinRate" class="stat-value team-siegquote">-</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label">🟢 Eigene Tore</div>
+            <div id="teamStatGoals" class="stat-value">-</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label">🔴 Gegentore</div>
+            <div id="teamStatConceded" class="stat-value">-</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label">⚖️ Tordifferenz</div>
+            <div id="teamStatGoalDiff" class="stat-value">-</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-label">⛔ Niederlagen</div>
+            <div id="teamStatLosses" class="stat-value">-</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -584,8 +719,11 @@ let isAutoRefreshActive = false;
               <td>${team.goalDiff}</td>
               <td>${team.points}</td>
             `;
+            tr.style.cursor = 'pointer';
+            tr.addEventListener('click', ()=>showTeamPopup(team, data, pos));
             tbody.appendChild(tr);
           });
+          window.currentLeagueData = data;
         })
         .catch(err=>{
           console.error(err);
@@ -760,6 +898,60 @@ let isAutoRefreshActive = false;
       });
   }
 
+  // Show team stats popup
+  function showTeamPopup(team, allTeams, position) {
+    const badges = getTeamBadges(team, allTeams, position);
+    
+    document.getElementById('teamPopupName').textContent = team.teamName;
+    document.getElementById('teamPopupLogo').src = team.teamIconUrl;
+    
+    const badgesContainer = document.getElementById('teamPopupBadges');
+    badgesContainer.innerHTML = badges.map(b => 
+      `<span class="team-badge">${b.icon} ${b.text}</span>`
+    ).join('');
+    
+    document.getElementById('teamStatMatches').textContent = team.matches;
+    document.getElementById('teamStatPoints').textContent = team.points;
+    document.getElementById('teamStatWins').textContent = team.won;
+    document.getElementById('teamStatDraws') .textContent = team.draw;
+    
+    const goalsPerGame = (team.goals / team.matches).toFixed(2);
+    const concededPerGame = (team.opponentGoals / team.matches).toFixed(2);
+    const winRate = ((team.won / team.matches) * 100).toFixed(1);
+    
+    document.getElementById('teamStatGoalsPerGame')     .textContent = goalsPerGame;
+    document.getElementById('teamStatConcededPerGame')  .textContent = concededPerGame;
+    document.getElementById('teamStatWinRate')          .textContent = winRate + '%';
+    document.getElementById('teamStatGoals')            .textContent = team.goals;
+    document.getElementById('teamStatConceded')         .textContent = team.opponentGoals;
+    document.getElementById('teamStatGoalDiff')         .textContent = (team.goalDiff > 0 ? '+' : '') + team.goalDiff;
+    document.getElementById('teamStatLosses')           .textContent = team.lost;
+    
+    const overlay = document.getElementById('teamPopup');
+    overlay.style.display = 'flex';
+    setTimeout(()=>overlay.classList.add('active'),10);
+  }
+  
+  function getTeamBadges(team, allTeams, position) {
+    const badges = [];
+    
+    if(position <= 3) badges.push({icon:'🏆', text:'Top 3 Liga'});
+    
+    const sortedByGoals = [...allTeams].sort((a,b)=>b.goals - a.goals);
+    const goalsRank = sortedByGoals.findIndex(t=>t.teamInfoId === team.teamInfoId) + 1;
+    if(goalsRank <= 3) badges.push({icon:'⚽', text:`Top ${goalsRank}: Tore`});
+    
+    const sortedByConceded = [...allTeams].sort((a,b)=>a.opponentGoals - b.opponentGoals);
+    const defenseRank = sortedByConceded.findIndex(t=>t.teamInfoId === team.teamInfoId) + 1;
+    if(defenseRank <= 3) badges.push({icon:'🛡️', text:`Top ${defenseRank}: Abwehr`});
+    
+    const sortedByDiff = [...allTeams].sort((a,b)=>b.goalDiff - a.goalDiff);
+    const diffRank = sortedByDiff.findIndex(t=>t.teamInfoId === team.teamInfoId) + 1;
+    if(diffRank <= 3) badges.push({icon:'⚖️', text:`Beste Bilanz #${diffRank}`});
+    
+    return badges;
+  }
+
   // Hide popup
   function hidePopup() {
     const overlay = document.getElementById('matchPopup');
@@ -770,27 +962,57 @@ let isAutoRefreshActive = false;
     },300);
   }
 
-  // Popup event listeners
-  const popupClose = document.getElementById('popupClose');
-  const popupOverlay = document.getElementById('matchPopup');
+  // Hide team popup
+  function hideTeamPopup() {
+    const overlay = document.getElementById('teamPopup');
+    overlay.classList.remove('active');
+    setTimeout(()=>{
+      overlay.style.display = 'none';
+    },300);
+  }
+
+  // Match popup event listeners
+  const matchPopupClose = document.getElementById('popupClose');
+  const matchPopupOverlay = document.getElementById('matchPopup');
   
-  if(popupClose){
-    popupClose.addEventListener('click', hidePopup);
+  if(matchPopupClose){
+    matchPopupClose.addEventListener('click', hidePopup);
   }
   
-  if(popupOverlay){
-    popupOverlay.addEventListener('click',(e)=>{
-      if(e.target === popupOverlay){
+  if(matchPopupOverlay){
+    matchPopupOverlay.addEventListener('click',(e)=>{
+      if(e.target === matchPopupOverlay){
         hidePopup();
       }
     });
   }
   
   document.addEventListener('keydown',(e)=>{
-    if(e.key==='Escape' && popupOverlay.classList.contains('active')){
-      hidePopup();
+    if(e.key==='Escape'){
+      if(matchPopupOverlay.classList.contains('active')){
+        hidePopup();
+      }
+      if(document.getElementById('teamPopup').classList.contains('active')){
+        hideTeamPopup();
+      }
     }
   });
+  
+  // Team popup event listeners
+  const teamPopupClose = document.getElementById('teamPopupClose');
+  const teamPopupOverlay = document.getElementById('teamPopup');
+  
+  if(teamPopupClose){
+    teamPopupClose.addEventListener('click', hideTeamPopup);
+  }
+  
+  if(teamPopupOverlay){
+    teamPopupOverlay.addEventListener('click',(e)=>{
+      if(e.target === teamPopupOverlay){
+        hideTeamPopup();
+      }
+    });
+  }
 
   // Event listeners
   leagueSelect.addEventListener('change', refresh);
