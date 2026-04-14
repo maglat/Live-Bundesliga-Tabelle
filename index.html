@@ -902,22 +902,21 @@ let isAutoRefreshActive = false;
       `<span class="team-badge">${b.icon} ${b.text}</span>`
     ).join('');
     
-    document.getElementById('teamStatMatches').textContent = team.matches;
-    document.getElementById('teamStatPoints').textContent = team.points;
     document.getElementById('teamStatWins').textContent = team.won;
-    document.getElementById('teamStatDraws') .textContent = team.draw;
+    document.getElementById('teamStatDraws').textContent = team.draw;
+    document.getElementById('teamStatLosses').textContent = team.lost;
+    
+    const winRate = ((team.won / team.matches) * 100).toFixed(1);
+    document.getElementById('teamStatWinRate').textContent = winRate + '%';
     
     const goalsPerGame = (team.goals / team.matches).toFixed(2);
     const concededPerGame = (team.opponentGoals / team.matches).toFixed(2);
-    const winRate = ((team.won / team.matches) * 100).toFixed(1);
+    document.getElementById('teamStatGoalsPerGame').textContent = goalsPerGame;
+    document.getElementById('teamStatConcededPerGame').textContent = concededPerGame;
     
-    document.getElementById('teamStatGoalsPerGame')     .textContent = goalsPerGame;
-    document.getElementById('teamStatConcededPerGame')  .textContent = concededPerGame;
-    document.getElementById('teamStatWinRate')          .textContent = winRate + '%';
-    document.getElementById('teamStatGoals')            .textContent = team.goals;
-    document.getElementById('teamStatConceded')         .textContent = team.opponentGoals;
-    document.getElementById('teamStatGoalDiff')         .textContent = (team.goalDiff > 0 ? '+' : '') + team.goalDiff;
-    document.getElementById('teamStatLosses')           .textContent = team.lost;
+    document.getElementById('teamStatGoals').textContent = team.goals;
+    document.getElementById('teamStatConceded').textContent = team.opponentGoals;
+    document.getElementById('teamStatGoalDiff').textContent = (team.goalDiff > 0 ? '+' : '') + team.goalDiff;
     
     const overlay = document.getElementById('teamPopup');
     overlay.style.display = 'flex';
